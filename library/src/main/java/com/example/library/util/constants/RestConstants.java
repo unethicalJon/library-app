@@ -13,6 +13,8 @@ public interface RestConstants {
         String BASE = ROOT + "/user";
 
         String ADD_USER = "/add-user";
+
+        String AUTHENTICATE_USER = "/login-user";
     }
 
     interface BookController {
