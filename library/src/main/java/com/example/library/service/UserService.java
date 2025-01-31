@@ -25,7 +25,6 @@ public class UserService {
 
     public User postUser(UserDto addUserRequest) {
 
-
         Library library = libraryService.findById(addUserRequest.getLibrary().getId());
 
         User user = new User();
