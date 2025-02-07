@@ -53,14 +53,14 @@ public class UserService {
         }
     }
 
-    private void validateUpdatedUsername(String currentUsername, String newUsername) {
-        if (!currentUsername.equals(newUsername) && userRepository.existsByUsername(newUsername)) {
+    private void validateNewUsername(String newUsername) {
+        if (userRepository.existsByUsername(newUsername)) {
             throw new BadRequestException("Username is already taken");
         }
     }
 
-    private void validateNewUsername(String newUsername) {
-        if (userRepository.existsByUsername(newUsername)) {
+    private void validateUpdatedUsername(String currentUsername, String newUsername) {
+        if (!currentUsername.equals(newUsername) && userRepository.existsByUsername(newUsername)) {
             throw new BadRequestException("Username is already taken");
         }
     }

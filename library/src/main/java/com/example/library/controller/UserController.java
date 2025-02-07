@@ -33,7 +33,7 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-    @PutMapping(RestConstants.ID_PATH)
+    @PutMapping(RestConstants.UserController.UPDATE + RestConstants.ID_PATH)
     public ResponseEntity<User> updateUserProfile(@PathVariable(value = RestConstants.ID) Long id, @RequestBody SimpleUserDto updatedUser) {
         User user = userService.updateUserProfile(id, updatedUser);
         return new ResponseEntity(EntityIdDto.of(user.getId()), HttpStatus.OK);

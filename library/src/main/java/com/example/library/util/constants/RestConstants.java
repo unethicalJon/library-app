@@ -18,11 +18,9 @@ public interface RestConstants {
 
         String SIGN_UP = "/sign-up";
 
-        String PROFILE = "/profile";
+        String UPDATE = "/update";
 
-        String UPDATE = "/profile-update";
-
-        String PASSWORD_CHANGE = "/change-password";
+        String PASSWORD_CHANGE = "/password";
 
         String ACTIVATE_USER = "/activate";
 
@@ -34,7 +32,7 @@ public interface RestConstants {
 
         String BASE = ROOT + "/book";
 
-        String ADD_USER = "/add-book";
+        String ADD_BOOK = "/add";
     }
 
     interface AuthController {
@@ -44,6 +42,18 @@ public interface RestConstants {
         String LOG_IN = "/log-in";
 
         String LOGIN_FULL_PATH = BASE + LOG_IN;
+    }
+
+    interface LibraryController {
+
+        String BASE = ROOT + "/library";
+
+        String ADD = "/add";
+
+        String UPDATE = "/update";
+
+        String DELETE = "/delete";
+
     }
 
 
