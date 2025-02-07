@@ -1,60 +1,73 @@
 package com.example.library.security;
 
-import lombok.AllArgsConstructor;
+import com.example.library.util.constants.RestConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
+    private final JwtRequestFilter jwtRequestFilter;
 
-    private JwtAuthEntryPoint authEntryPoint;
-
-    private CustomUserDetailService customUserDetailService;
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-       http
-               .csrf().disable()
-               .exceptionHandling()
-               .authenticationEntryPoint(authEntryPoint)
-               .and()
-               .sessionManagement()
-               .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-               .and()
-               .authorizeHttpRequests()
-               .requestMatchers("/api/user/**").permitAll()
-               .anyRequest().authenticated()
-               .and()
-               .httpBasic();
-
-       http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+    public SecurityConfig(@Lazy JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+    private static final String[] AUTH_WHITELIST = {
+            RestConstants.AuthController.LOGIN_FULL_PATH,
+            RestConstants.UserController.SIGNUP_FULL_PATH,
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/error/**",
+            "/rest-api/swagger-config",
+            "/rest-api"
+    };
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
+    DefaultSecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .cors(withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .httpBasic(withDefaults())
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
 }
