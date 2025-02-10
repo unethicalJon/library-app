@@ -5,6 +5,7 @@ import com.example.library.dto.library.LibraryDto;
 import com.example.library.entity.Library;
 import com.example.library.service.LibraryService;
 import com.example.library.util.constants.RestConstants;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

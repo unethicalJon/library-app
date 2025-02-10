@@ -1,6 +1,7 @@
 package com.example.library.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;
@@ -15,9 +16,11 @@ public class Library {
     @Column(name="id")
     private Long id;
 
+    @NotBlank(message = "name is required!")
     @Column(name="name")
     private String name;
 
+    @NotBlank(message = "address is required!")
     @Column(name="address")
     private String address;
 

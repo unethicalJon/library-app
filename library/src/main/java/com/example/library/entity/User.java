@@ -19,24 +19,24 @@ public class User {
     @Column(name="id")
     private Long id;
 
-    @NotBlank(message = "please fill the field, it can not be empty!")
+    @NotBlank(message = "name is required!")
     @Column(name="name")
     private String name;
 
-    @NotBlank(message = "please fill the field, it can not be empty!")
+    @NotBlank(message = "surname is required!")
     @Column(name="surname")
     private String surname;
 
-    @NotBlank(message = "please fill the field, it can not be empty!")
+    @NotBlank(message = "email is required!")
     @Email(message = "email is not in the right format!")
     @Column(name="email")
     private String email;
 
-    @NotBlank(message = "please fill the field, it can not be empty!")
+    @NotBlank(message = "username is required!")
     @Column(name="username")
     private String username;
 
-    @NotBlank(message = "please fill the field, it can not be empty!")
+    @NotBlank(message = "password is required!")
     @Column(name="password")
     private String password;
 
