@@ -78,7 +78,7 @@ public class LibraryService {
     }
 
     public Page<LibraryDto> getLibrariesRoleAdmin(String keyword, int page, int size) {
-        return libraryRepository.findbyNameorAddress(keyword, PageRequest.of(page, size)).map(this::mapToDto);
+        return libraryRepository.findbyNameOrAddress(keyword, PageRequest.of(page, size)).map(this::mapToDto);
     }
 
     public LibraryDto getLibraryRoleUser() {

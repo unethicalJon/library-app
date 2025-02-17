@@ -11,6 +11,8 @@ import com.example.library.repository.UserRepository;
 import com.example.library.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -68,8 +70,18 @@ public class BookService {
         return bookRepository.findBooksByUserLibrary(user.getId()).stream().map(this::mapToDto).toList();
     }
 
+    public Page<BookDto> getAllBooks(String keyword, int page, int size) {
+        return bookRepository.findAllbyTitleOrAuthor(keyword, PageRequest.of(page, size)).map(this::mapToDto);
+    }
+
     private BookDto mapToDto(Book book) {
         return modelMapper.map(book, BookDto.class);
+    }
+
+    public String deleteBook(Long id) {
+        findById(id);
+        bookRepository.deleteById(id);
+        return "Book with id: " + id + " was deleted succesfully";
     }
 
 }

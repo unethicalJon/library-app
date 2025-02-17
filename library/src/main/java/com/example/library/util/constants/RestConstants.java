@@ -39,6 +39,10 @@ public interface RestConstants {
         String ADD = "/add";
 
         String UPDATE = "/update" + ID_PATH;
+
+        String USER_BOOKS = "/for-user";
+
+        String DELETE = "/delete" + ID_PATH;
     }
 
     interface AuthController {

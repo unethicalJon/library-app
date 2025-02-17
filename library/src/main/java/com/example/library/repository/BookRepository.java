@@ -1,6 +1,8 @@
 package com.example.library.repository;
 
 import com.example.library.entity.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +20,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             nativeQuery = true)
     List<Book> findBooksByUserLibrary(@Param("userId") Long userId);
 
+    @Query(value = "SELECT * FROM book WHERE (:keyword IS NULL OR :keyword = '' OR title LIKE %:keyword% OR author LIKE %:keyword%)",
+            nativeQuery = true)
+    Page<Book> findAllbyTitleOrAuthor(@Param("keyword")String keyword, Pageable pageable);
 }
+

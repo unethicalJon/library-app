@@ -6,6 +6,8 @@ import com.example.library.entity.Book;
 import com.example.library.service.BookService;
 import com.example.library.util.constants.RestConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,9 +36,27 @@ public class BookController {
         return new ResponseEntity(EntityIdDto.of(book.getId()), HttpStatus.OK);
     }
 
-    @GetMapping("/user")
+    @GetMapping(RestConstants.BookController.USER_BOOKS)
     public ResponseEntity<List<BookDto>> getBooksFromUserLibrary() {
         List<BookDto> books = bookService.getBooksFromUserLibrary();
         return ResponseEntity.ok(books);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @GetMapping()
+    public Page<BookDto> getAllBooks(@RequestParam(required = false) String keyword,
+                                     @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_NUMBER) int page,
+                                     @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_SIZE) int size) {
+        return bookService.getAllBooks(keyword, page, size);
+    }
+    
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @DeleteMapping(RestConstants.BookController.DELETE)
+    public String deleteBook(@PathVariable(value = RestConstants.ID) Long id) {
+        try {
+            return bookService.deleteBook(id);
+        } catch (DataIntegrityViolationException ex){
+            throw new RuntimeException("Libri me id: " + id + " eshte e lidhur me entitete te tjera!");
+        }
     }
 }
