@@ -33,14 +33,14 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-    @PutMapping(RestConstants.UserController.UPDATE + RestConstants.ID_PATH)
+    @PutMapping(RestConstants.UserController.UPDATE)
     public ResponseEntity<User> updateUserProfile(@PathVariable(value = RestConstants.ID) Long id, @RequestBody SimpleUserDto updatedUser) {
         User user = userService.updateUserProfile(id, updatedUser);
         return new ResponseEntity(EntityIdDto.of(user.getId()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @PutMapping(RestConstants.UserController.PASSWORD_CHANGE + RestConstants.ID_PATH)
+    @PutMapping(RestConstants.UserController.PASSWORD_CHANGE)
     public ResponseEntity<User> adminUpdateUserPassword(@PathVariable(value = RestConstants.ID) Long id,
                                                         @RequestBody User adminUpdatedUserPassword) {
         try {
@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @PutMapping(RestConstants.UserController.ACTIVATE_USER + RestConstants.ID_PATH)
+    @PutMapping(RestConstants.UserController.ACTIVATE_USER)
     public ResponseEntity<String> adminActivateUser(@PathVariable(value = RestConstants.ID) Long id) {
         userService.adminActivateUser(id);
         return ResponseEntity.ok("User activated successfully.");

@@ -3,6 +3,7 @@ package com.example.library.entity;
 import com.example.library.datatype.Genre;
 import com.example.library.datatype.Section;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -32,7 +33,8 @@ public class Book {
     private Section section;
 
     @Column(name="price")
-    private String price;
+    @Min(value = 1, message = "Price must be greater than zero")
+    private double price;
 
     @Column(name="year_of_publication")
     private LocalDate yearOfPublication;

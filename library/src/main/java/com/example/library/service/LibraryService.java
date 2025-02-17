@@ -2,9 +2,16 @@ package com.example.library.service;
 
 import com.example.library.dto.library.LibraryDto;
 import com.example.library.entity.Library;
+import com.example.library.entity.User;
 import com.example.library.exceptions.BadRequestException;
 import com.example.library.repository.LibraryRepository;
+import com.example.library.repository.UserRepository;
+import com.example.library.security.CustomUserDetails;
+import com.example.library.security.UserUtil;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,6 +19,8 @@ import org.springframework.stereotype.Service;
 public class LibraryService {
 
     private final LibraryRepository libraryRepository;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     public Library save(Library library) {return libraryRepository.save(library);}
 
@@ -57,4 +66,25 @@ public class LibraryService {
         libraryRepository.deleteById(id);
         return "Library with id: " + id + " deleted succesfully";
     }
+
+    private User loggedInUser() {
+        CustomUserDetails loggedInUser = UserUtil.getLoggedInUser();
+        return userRepository.findById(loggedInUser.getId())
+                .orElseThrow(() -> new BadRequestException("User not found"));
+    }
+
+    private LibraryDto mapToDto(Library library) {
+        return modelMapper.map(library, LibraryDto.class);
+    }
+
+    public Page<LibraryDto> getLibrariesRoleAdmin(String keyword, int page, int size) {
+        return libraryRepository.findbyNameorAddress(keyword, PageRequest.of(page, size)).map(this::mapToDto);
+    }
+
+    public LibraryDto getLibraryRoleUser() {
+        Library library = findById(loggedInUser().getLibrary().getId());
+        return mapToDto(library);
+    }
+
 }
+
