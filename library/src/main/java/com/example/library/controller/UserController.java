@@ -1,8 +1,8 @@
 package com.example.library.controller;
 
 import com.example.library.dto.general.EntityIdDto;
-import com.example.library.dto.user.UserDto;
 import com.example.library.dto.user.SimpleUserDto;
+import com.example.library.dto.user.UserDto;
 import com.example.library.entity.User;
 import com.example.library.service.UserService;
 import com.example.library.util.constants.RestConstants;
