@@ -27,8 +27,8 @@ public class BookService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public Book save(Book book) {
-        return bookRepository.save(book);
+    public void save(Book book) {
+        bookRepository.save(book);
     }
 
     public Book findById(Long id) {
@@ -65,9 +65,10 @@ public class BookService {
                 .orElseThrow(() -> new BadRequestException("User not found"));
     }
 
-    public List<BookDto> getBooksFromUserLibrary() {
+    public List<Book> getBooksFromUserLibrary() {
         User user = loggedInUser();
-        return bookRepository.findBooksByUserLibrary(user.getId()).stream().map(this::mapToDto).toList();
+        List<Book> result = bookRepository.findBooksOfUser(user.getId()).stream().toList();
+        return result;
     }
 
     public Page<BookDto> getAllBooks(String keyword, int page, int size) {
@@ -81,7 +82,7 @@ public class BookService {
     public String deleteBook(Long id) {
         findById(id);
         bookRepository.deleteById(id);
-        return "Book with id: " + id + " was deleted succesfully";
+        return "Book with id: " + id + " was deleted successfully";
     }
 
 }

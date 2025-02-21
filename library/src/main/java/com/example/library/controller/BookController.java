@@ -37,8 +37,8 @@ public class BookController {
     }
 
     @GetMapping(RestConstants.BookController.USER_BOOKS)
-    public ResponseEntity<List<BookDto>> getBooksFromUserLibrary() {
-        List<BookDto> books = bookService.getBooksFromUserLibrary();
+    public ResponseEntity<List<Book>> getBooksFromUserLibrary() {
+        List<Book> books = bookService.getBooksFromUserLibrary();
         return ResponseEntity.ok(books);
     }
 

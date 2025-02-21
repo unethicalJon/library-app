@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface LibraryRepository extends JpaRepository<Library, Long> {
     boolean existsByName(String name);
 
-    @Query(value = "SELECT * FROM library WHERE (:keyword IS NULL OR :keyword = '' OR name LIKE %:keyword% OR address LIKE %:keyword%)",
+    @Query(value = "SELECT * FROM library WHERE (?1 IS NULL OR ?1 = '' OR name LIKE %:keyword% OR address LIKE %:keyword%)",
             nativeQuery = true)
-    Page<Library> findbyNameOrAddress(@Param("keyword")String keyword, Pageable pageable);
+    Page<Library> findbyNameOrAddress(String keyword, Pageable pageable);
 }
