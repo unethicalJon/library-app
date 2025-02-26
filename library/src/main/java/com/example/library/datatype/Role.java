@@ -11,6 +11,5 @@ import static com.example.library.security.RoleName.USER_NAME;
 public enum Role {
 
     USER(USER_NAME), ADMIN(ADMIN_NAME);
-
     public String name;
 }

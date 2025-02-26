@@ -1,6 +1,7 @@
 package com.example.library.controller;
 
 import com.example.library.dto.general.EntityIdDto;
+import com.example.library.dto.user.PasswordRequestDto;
 import com.example.library.dto.user.SimpleUserDto;
 import com.example.library.dto.user.UserDto;
 import com.example.library.entity.User;
@@ -41,14 +42,11 @@ public class UserController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @PutMapping(RestConstants.UserController.PASSWORD_CHANGE)
-    public ResponseEntity<User> adminUpdateUserPassword(@PathVariable(value = RestConstants.ID) Long id,
-                                                        @RequestBody User adminUpdatedUserPassword) {
-        try {
-            User updatedUser = userService.adminUpdateUserPassword(id, adminUpdatedUserPassword);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(null);
-        }
+    public ResponseEntity<EntityIdDto> updateUserPassword(@PathVariable(value = RestConstants.ID) Long id,
+                                                          @RequestBody PasswordRequestDto passwordRequestDto) {
+
+        User user = userService.updateUserPassword(id, passwordRequestDto);
+        return new ResponseEntity<>(EntityIdDto.of(user.getId()), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")

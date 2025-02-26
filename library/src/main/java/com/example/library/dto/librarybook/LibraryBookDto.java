@@ -1,6 +1,7 @@
 package com.example.library.dto.librarybook;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
@@ -14,6 +15,6 @@ public class LibraryBookDto {
     private Long bookId;
 
     @NotNull(message = "stock is required")
-    @PositiveOrZero(message = "stock can't be less than 1")
+    @Positive(message = "stock can't be negative")
     private Integer stock;
 }

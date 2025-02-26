@@ -2,6 +2,7 @@ package com.example.library.service;
 
 import com.example.library.datatype.Role;
 import com.example.library.dto.auth.AuthenticationRequestDto;
+import com.example.library.dto.user.PasswordRequestDto;
 import com.example.library.dto.user.UserDto;
 import com.example.library.dto.user.SimpleUserDto;
 import com.example.library.entity.Library;
@@ -22,8 +23,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -117,12 +116,14 @@ public class UserService {
         return user;
     }
 
-    public User adminUpdateUserPassword(Long id, User adminUpdatedUserPassword) {
-        return userRepository.findById(id).map(user -> {
-            validateUserPassword(adminUpdatedUserPassword.getPassword());
-            user.setPassword(passwordEncoder.encode(adminUpdatedUserPassword.getPassword()));
-            return save(user);
-        }).orElseThrow(() -> new RuntimeException("User not found"));
+    public User updateUserPassword (Long id, PasswordRequestDto passwordRequestDto) {
+        User user = findUserById(id);
+        if (!passwordRequestDto.getNewPassword().equals(passwordRequestDto.getConfirmationPassword())) {
+            throw new IllegalStateException("Passwords do not match");
+        }
+        validateUserPassword(passwordRequestDto.getConfirmationPassword());
+        user.setPassword(passwordEncoder.encode(passwordRequestDto.getConfirmationPassword()));
+        return save(user);
     }
 
     public User adminActivateUser(Long id) {

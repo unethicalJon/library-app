@@ -13,8 +13,9 @@ public interface LibraryBookRepository extends JpaRepository<LibraryBook, Long> 
 
     Optional<LibraryBook> findByBook(Book book);
 
-    @Query("SELECT lb FROM LibraryBook lb JOIN FETCH lb.library JOIN FETCH lb.book")
-    Page<LibraryBook> findAllWithLibraryAndBook(Pageable pageable);
-
     Page<LibraryBook> findAll(Pageable pageable);
+
+    @Query("SELECT lb.book, lb.stock FROM LibraryBook lb WHERE lb.stock > 0 AND (?1 IS NULL OR lb.library.id = ?1)")
+    Page<LibraryBook> findBooksByStock(Long libraryId, Pageable pageable);
+
 }

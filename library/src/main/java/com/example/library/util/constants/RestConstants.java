@@ -66,10 +66,6 @@ public interface RestConstants {
 
         String LIBRARIES_FOR_USER = "/for-user";
 
-        String LIBRARIES = "/libraries";
-
-        String SEARCH = "/search";
-
     }
 
     interface LibraryBookController {
@@ -77,6 +73,18 @@ public interface RestConstants {
         String BASE = ROOT + "/library-book";
 
         String UPDATE_STOCK = "/update-stock" + ID_PATH;
+
+        String AVAILABLE_BOOKS = "/available-books";
+    }
+
+    interface RequestController {
+
+        String BASE = ROOT + "/request";
+
+        String CREATE = "/create";
+
+        String COMPLETE = "/complete" + ID_PATH;
+
     }
 
 

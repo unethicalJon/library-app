@@ -1,10 +1,6 @@
 package com.example.library.service;
 
-import com.example.library.dto.book.BookDto;
-import com.example.library.dto.book.SimpleBookDto;
-import com.example.library.dto.library.SimpleLibraryDto;
 import com.example.library.dto.librarybook.LibraryBookDto;
-import com.example.library.dto.librarybook.SimpleLibraryBookDto;
 import com.example.library.entity.Book;
 import com.example.library.entity.Library;
 import com.example.library.entity.LibraryBook;
@@ -22,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -64,11 +61,15 @@ public class LibraryBookService {
         return libraryBookRepository.save(libraryBook);
     }
 
+    private void validateInput(List<LibraryBookDto> libraryBookDtos) {
+        if (libraryBookDtos.isEmpty()) {
+            throw new IllegalArgumentException("Book list cannot be empty");
+        }
+    }
+
     @Transactional(rollbackOn = Exception.class)
     public List<Long> updateStock(Long libraryId, List<LibraryBookDto> libraryBookDtos) {
-        if (libraryBookDtos.isEmpty()) {
-            throw new IllegalArgumentException("Book list can not be empty");
-        }
+        validateInput(libraryBookDtos);
 
         Library library = findLibraryById(libraryId);
         List<Long> updatedLibraryBooks = new ArrayList<>();
@@ -79,8 +80,8 @@ public class LibraryBookService {
             LibraryBook libraryBook;
             if (libraryBookDto.getId() == null) {
                 // Check if a LibraryBook already exists for the given library and book
-                Optional<LibraryBook> existingLibraryBook = libraryBookRepository.findByBook(book);
-                if (existingLibraryBook.isPresent()) {
+                Optional<LibraryBook> existingBook = libraryBookRepository.findByBook(book);
+                if (existingBook.isPresent()) {
                     // Throw an exception if a matching LibraryBook exists
                     throw new IllegalArgumentException("You are trying to add a Book (with id:" + libraryBookDto.getBookId() + "), which already exists in LibraryBook." +
                             "\n If you want to update its' stock, please insert the respective LibraryBookId.");
@@ -88,6 +89,11 @@ public class LibraryBookService {
                 // Create new LibraryBook if it doesn't exist
                 libraryBook = createNewLibraryBook(library, book, libraryBookDto);
             } else {
+                // Check if LibraryBookId's LibraryId is the same as PathVariable LibraryId
+                libraryBook = findLibraryBookById(libraryBookDto.getId());
+                if (!Objects.equals(libraryBook.getLibrary().getId(), libraryId)) {
+                    throw new IllegalArgumentException("Library IDs are not matching");
+                }
                 // Update the existing LibraryBook
                 libraryBook = updateExistingLibraryBook(libraryBookDto);
             }
@@ -96,36 +102,15 @@ public class LibraryBookService {
         return updatedLibraryBooks;
     }
 
-    /*public Page<SimpleLibraryBookDto> getAllLibraryBooks(int page, int size) {
-        return libraryBookRepository.findAllWithLibraryAndBook(PageRequest.of(page, size)).map(this::convertToDto);
-    }
-
-    private SimpleLibraryBookDto convertToDto(LibraryBook libraryBook) {
-        SimpleLibraryBookDto dto = new SimpleLibraryBookDto();
-        dto.setId(libraryBook.getId());
-
-        // Map Library (Only id and name)
-        SimpleLibraryDto libraryDto = new SimpleLibraryDto();
-        libraryDto.setId(libraryBook.getLibrary().getId());
-        libraryDto.setName(libraryBook.getLibrary().getName());
-        dto.setSimpleLibraryDto(libraryDto);
-
-        // Map Book (Only id, title, and author)
-        SimpleBookDto bookDto = new SimpleBookDto();
-        bookDto.setId(libraryBook.getBook().getId());
-        bookDto.setTitle(libraryBook.getBook().getTitle());
-        bookDto.setAuthor(libraryBook.getBook().getAuthor());
-        dto.setSimpleBookDto(bookDto);
-
-        dto.setStock(libraryBook.getStock());
-        return dto;
-    }*/
-
     public Page<LibraryBookDto> getLibraryBooks(int page, int size) {
         return libraryBookRepository.findAll(PageRequest.of(page, size)).map(this::mapToDto);
     }
 
     private LibraryBookDto mapToDto(LibraryBook libraryBook) {
         return modelMapper.map(libraryBook, LibraryBookDto.class);
+    }
+
+    public Page<LibraryBook> getAvailableBooks(Long libraryId, int page, int size) {
+            return libraryBookRepository.findBooksByStock(libraryId, PageRequest.of(page, size));
     }
 }

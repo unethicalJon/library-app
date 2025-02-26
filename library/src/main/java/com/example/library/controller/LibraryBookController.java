@@ -1,7 +1,8 @@
 package com.example.library.controller;
 
 import com.example.library.dto.librarybook.LibraryBookDto;
-import com.example.library.dto.librarybook.SimpleLibraryBookDto;
+import com.example.library.entity.Book;
+import com.example.library.entity.LibraryBook;
 import com.example.library.service.LibraryBookService;
 import com.example.library.util.constants.RestConstants;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,20 @@ public class LibraryBookController {
         return ResponseEntity.ok(updatedLibraryBooks);
     }
 
-/*    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @GetMapping()
-    public Page<SimpleLibraryBookDto> getAllLibraryBooks(@RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_NUMBER) int page,
-                                                                         @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_SIZE) int size) {
-        return libraryBookService.getAllLibraryBooks(page, size);
-    }*/
-
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @GetMapping()
     public Page<LibraryBookDto> getLibraryBooks(@RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_NUMBER) int page,
                                                 @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_SIZE) int size) {
         return libraryBookService.getLibraryBooks(page, size);
     }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @GetMapping(RestConstants.LibraryBookController.AVAILABLE_BOOKS)
+    public Page<LibraryBook> getAvailableBooks( @RequestParam(value = "library", required = false) Long libraryId,
+                                                @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_SIZE) int size) {
+        return libraryBookService.getAvailableBooks(libraryId, page, size);
+    }
+
+
 }
