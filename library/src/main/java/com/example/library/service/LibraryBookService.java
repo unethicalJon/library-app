@@ -43,7 +43,7 @@ public class LibraryBookService {
         return findEntityById(id, bookRepository, "Book");
     }
 
-    private LibraryBook findLibraryBookById(Long id) {
+    public LibraryBook findLibraryBookById(Long id) {
         return findEntityById(id, libraryBookRepository, "LibraryBook");
     }
 
@@ -111,6 +111,14 @@ public class LibraryBookService {
     }
 
     public Page<LibraryBook> getAvailableBooks(Long libraryId, int page, int size) {
-            return libraryBookRepository.findBooksByStock(libraryId, PageRequest.of(page, size));
+        return libraryBookRepository.findBooksByStock(libraryId, PageRequest.of(page, size));
+    }
+
+    public Integer getStockForBook(Book book) {
+        return libraryBookRepository.getStockWithBookId(book.getId());
+    }
+
+    public LibraryBook getLbByBook(Book book) {
+        return libraryBookRepository.findLbByBook(book);
     }
 }

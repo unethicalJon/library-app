@@ -87,5 +87,14 @@ public interface RestConstants {
 
     }
 
+    interface OrderController {
+
+        String BASE = ROOT + "/order";
+
+        String CREATE_ORDER = "create";
+
+        String UPDATE_ORDER = "/update" + ID_PATH;
+    }
+
 
 }

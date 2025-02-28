@@ -12,6 +12,7 @@ import com.example.library.exceptions.NotFoundException;
 import com.example.library.exceptions.UnauthorizedException;
 import com.example.library.repository.UserRepository;
 import com.example.library.security.CustomUserDetailService;
+import com.example.library.security.CustomUserDetails;
 import com.example.library.security.UserUtil;
 import com.example.library.security.JwtUtil;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import static com.example.library.security.UserUtil.getLoggedInUser;
 
 @Service
 @AllArgsConstructor
@@ -43,6 +46,12 @@ public class UserService {
     public User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("User not found for ID: " + id));
+    }
+
+    public User loggedInUser() {
+        CustomUserDetails loggedInUser = getLoggedInUser();
+        return userRepository.findById(loggedInUser.getId())
+                .orElseThrow(() -> new BadRequestException("User not found"));
     }
 
     public void validateUserPassword(String userPassword) {
