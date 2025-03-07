@@ -4,16 +4,12 @@ import com.example.library.dto.librarybook.LibraryBookDto;
 import com.example.library.entity.Book;
 import com.example.library.entity.Library;
 import com.example.library.entity.LibraryBook;
-import com.example.library.repository.BookRepository;
 import com.example.library.repository.LibraryBookRepository;
-import com.example.library.repository.LibraryRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,25 +22,15 @@ import java.util.Optional;
 public class LibraryBookService {
 
     private final LibraryBookRepository libraryBookRepository;
-    private final LibraryRepository libraryRepository;
-    private final BookRepository bookRepository;
+    private final LibraryService libraryService;
+    private final BookService bookService;
     private final ModelMapper modelMapper;
 
-    private <T> T findEntityById(Long id, JpaRepository<T, Long> repository, String entityName) {
-        return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(entityName + " with id " + id + " not found"));
-    }
+    public LibraryBook save(LibraryBook libraryBook) {return libraryBookRepository.save(libraryBook);}
 
-    private Library findLibraryById(Long id) {
-        return findEntityById(id, libraryRepository, "Library");
-    }
-
-    private Book findBookById(Long id) {
-        return findEntityById(id, bookRepository, "Book");
-    }
-
-    public LibraryBook findLibraryBookById(Long id) {
-        return findEntityById(id, libraryBookRepository, "LibraryBook");
+    public LibraryBook findById(Long id) {
+        return libraryBookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("LibraryBook with ID " + id + " is not found"));
     }
 
     private LibraryBook createNewLibraryBook(Library library, Book book, LibraryBookDto libraryBookDto) {
@@ -52,13 +38,13 @@ public class LibraryBookService {
         libraryBook.setLibrary(library);
         libraryBook.setBook(book);
         libraryBook.setStock(libraryBookDto.getStock());
-        return libraryBookRepository.save(libraryBook);
+        return save(libraryBook);
     }
 
     private LibraryBook updateExistingLibraryBook(LibraryBookDto libraryBookDto) {
-        LibraryBook libraryBook = findLibraryBookById(libraryBookDto.getId());
+        LibraryBook libraryBook = findById(libraryBookDto.getId());
         libraryBook.setStock(libraryBookDto.getStock());
-        return libraryBookRepository.save(libraryBook);
+        return save(libraryBook);
     }
 
     private void validateInput(List<LibraryBookDto> libraryBookDtos) {
@@ -70,17 +56,16 @@ public class LibraryBookService {
     @Transactional(rollbackOn = Exception.class)
     public List<Long> updateStock(Long libraryId, List<LibraryBookDto> libraryBookDtos) {
         validateInput(libraryBookDtos);
-
-        Library library = findLibraryById(libraryId);
+        Library library = libraryService.findById(libraryId);
         List<Long> updatedLibraryBooks = new ArrayList<>();
 
         for (LibraryBookDto libraryBookDto : libraryBookDtos) {
-            Book book = findBookById(libraryBookDto.getBookId());
+            Book book = bookService.findById(libraryBookDto.getBookId());
 
             LibraryBook libraryBook;
             if (libraryBookDto.getId() == null) {
                 // Check if a LibraryBook already exists for the given library and book
-                Optional<LibraryBook> existingBook = libraryBookRepository.findByBook(book);
+                Optional<LibraryBook> existingBook = libraryBookRepository.findByLibraryAndBook(library, book);
                 if (existingBook.isPresent()) {
                     // Throw an exception if a matching LibraryBook exists
                     throw new IllegalArgumentException("You are trying to add a Book (with id:" + libraryBookDto.getBookId() + "), which already exists in LibraryBook." +
@@ -90,7 +75,7 @@ public class LibraryBookService {
                 libraryBook = createNewLibraryBook(library, book, libraryBookDto);
             } else {
                 // Check if LibraryBookId's LibraryId is the same as PathVariable LibraryId
-                libraryBook = findLibraryBookById(libraryBookDto.getId());
+                libraryBook = findById(libraryBookDto.getId());
                 if (!Objects.equals(libraryBook.getLibrary().getId(), libraryId)) {
                     throw new IllegalArgumentException("Library IDs are not matching");
                 }
@@ -114,11 +99,11 @@ public class LibraryBookService {
         return libraryBookRepository.findBooksByStock(libraryId, PageRequest.of(page, size));
     }
 
-    public Integer getStockForBook(Book book) {
-        return libraryBookRepository.getStockWithBookId(book.getId());
+    public LibraryBook getLibraryBookByBookAndLibrary(Book book, Library library) {
+        return libraryBookRepository.findLibraryBookByBookAndLibrary(book, library);
     }
 
-    public LibraryBook getLbByBook(Book book) {
-        return libraryBookRepository.findLbByBook(book);
+    public LibraryBook getLibraryBookByBook(Book book) {
+        return libraryBookRepository.findLibraryBookByBook(book);
     }
 }

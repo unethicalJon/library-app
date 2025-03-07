@@ -2,7 +2,6 @@ package com.example.library.controller;
 
 import com.example.library.dto.general.EntityIdDto;
 import com.example.library.dto.order.OrderDto;
-import com.example.library.dto.order.OrderWrapperDto;
 import com.example.library.entity.BookOrder;
 import com.example.library.entity.Order;
 import com.example.library.service.OrderService;
@@ -25,20 +24,37 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping(RestConstants.OrderController.CREATE_ORDER)
     public ResponseEntity<List<BookOrder>> createBookOrder(
-            @RequestBody OrderWrapperDto orderWrapperDto) {
+            @RequestBody OrderDto orderDto) {
 
-        List<BookOrder> bookOrders = orderService.createBookOrder(
-                orderWrapperDto.getOrderDto(),
-                orderWrapperDto.getBookOrderDtos());
+        List<BookOrder> bookOrders = orderService.createBookOrder(orderDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(bookOrders);
     }
 
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PutMapping(RestConstants.OrderController.FOR_APPROVAL)
+    public ResponseEntity<Order> sendOrderForApproval(
+            @PathVariable(value = RestConstants.ID) Long id) {
+
+        Order order = orderService.sendForApproval(id);
+        return new ResponseEntity(EntityIdDto.of(order.getId()), HttpStatus.OK);
+    }
+
     @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PutMapping(RestConstants.OrderController.APPROVE_ORDER)
+    public ResponseEntity<Order> approveOrder(@PathVariable(value = RestConstants.ID) Long id,
+                                             @RequestBody OrderDto orderDto) {
+        Order order = orderService.approveOrder(id, orderDto);
+        return new ResponseEntity(EntityIdDto.of(order.getId()), HttpStatus.OK);
+    }
+
+
+    @PreAuthorize("hasAnyAuthority('USER')")
     @PutMapping(RestConstants.OrderController.UPDATE_ORDER)
     public ResponseEntity<Order> updateOrder(@PathVariable(value = RestConstants.ID) Long id,
-                                             @RequestBody OrderDto orderDto) {
+                                                      @RequestBody OrderDto orderDto) {
+
         Order order = orderService.updateOrder(id, orderDto);
-    return new ResponseEntity(EntityIdDto.of(order.getId()), HttpStatus.OK);
+        return ResponseEntity.ok(order);
     }
 }
 

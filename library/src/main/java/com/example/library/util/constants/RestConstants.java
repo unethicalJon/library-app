@@ -93,7 +93,11 @@ public interface RestConstants {
 
         String CREATE_ORDER = "create";
 
+        String APPROVE_ORDER = "/approve" + ID_PATH;
+
         String UPDATE_ORDER = "/update" + ID_PATH;
+
+        String FOR_APPROVAL = "/for-approval" + ID_PATH;
     }
 
 

@@ -25,7 +25,6 @@ public class BookDto {
     @NotNull(message = "Section is required")
     private String section;
 
-//    @Min(value = 1, message = "Price must be greater than zero")
     @PositiveOrZero(message = "Price must be greater than zero")
     private double price;
 

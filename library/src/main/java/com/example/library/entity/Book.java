@@ -34,7 +34,7 @@ public class Book {
 
     @Column(name="price")
     @Min(value = 1, message = "Price must be greater than zero")
-    private double price;
+    private Double price;
 
     @Column(name="year_of_publication")
     private LocalDate yearOfPublication;

@@ -7,6 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Status {
 
-    PENDING ("pending"), REFUSED ("refused"), ACCEPTED ("accepted");
+    CREATED ("created"), PENDING ("pending"), REFUSED ("refused"), ACCEPTED ("accepted");
     public String name;
 }
