@@ -2,7 +2,8 @@ package com.example.library.dto.order;
 
 import com.example.library.datatype.Status;
 import com.example.library.dto.bookorder.BookOrderDto;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class OrderDto {
 
     private Status status;
 
-    @NotNull(message = "Book list cannot be empty")
+    @NotEmpty(message = "Book list cannot be empty")
+    @Valid
     private List<BookOrderDto> bookOrderDtos;
-
 }

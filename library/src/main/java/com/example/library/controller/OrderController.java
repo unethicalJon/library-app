@@ -2,7 +2,6 @@ package com.example.library.controller;
 
 import com.example.library.dto.general.EntityIdDto;
 import com.example.library.dto.order.OrderDto;
-import com.example.library.entity.BookOrder;
 import com.example.library.entity.Order;
 import com.example.library.service.OrderService;
 import com.example.library.util.constants.RestConstants;
@@ -10,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping(RestConstants.OrderController.BASE)
@@ -23,11 +22,11 @@ public class OrderController {
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PostMapping(RestConstants.OrderController.CREATE_ORDER)
-    public ResponseEntity<List<BookOrder>> createBookOrder(
+    public ResponseEntity<Order> createBookOrder(
             @RequestBody OrderDto orderDto) {
 
-        List<BookOrder> bookOrders = orderService.createBookOrder(orderDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookOrders);
+        Order order = orderService.createBookOrder(orderDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
     @PreAuthorize("hasAnyAuthority('USER')")
@@ -51,8 +50,7 @@ public class OrderController {
     @PreAuthorize("hasAnyAuthority('USER')")
     @PutMapping(RestConstants.OrderController.UPDATE_ORDER)
     public ResponseEntity<Order> updateOrder(@PathVariable(value = RestConstants.ID) Long id,
-                                                      @RequestBody OrderDto orderDto) {
-
+                                             @Validated @RequestBody OrderDto orderDto) {
         Order order = orderService.updateOrder(id, orderDto);
         return ResponseEntity.ok(order);
     }

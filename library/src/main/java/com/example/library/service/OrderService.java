@@ -52,7 +52,7 @@ public class OrderService {
 
     private void validateStatus(Order order, Status status) {
         if (!order.getStatus().equals(status)) {
-            throw new IllegalArgumentException(String.format("Invalid action for order with status %s", status));
+            throw new BadRequestException(String.format("Invalid action for order with status %s", status));
         }
     }
 
@@ -68,46 +68,40 @@ public class OrderService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List<BookOrder> createBookOrder(OrderDto orderDto) {
+    public Order createBookOrder(OrderDto orderDto) {
         Order order = createOrder(orderDto);
-        List<BookOrder> newBookOrder = new ArrayList<>();
         List<BookOrderDto> bookOrderDtoList = orderDto.getBookOrderDtos();
-        validateInput(bookOrderDtoList);
 
         for (BookOrderDto bookOrderDto : bookOrderDtoList) {
             Book book = bookService.findById(bookOrderDto.getBook().getId());
             if (book != null) {
-                BookOrder bookOrder = saveBookOrder(order, book, bookOrderDto);
-                newBookOrder.add(bookOrder);
+                saveBookOrder(order, book, bookOrderDto);
             } else {
-                throw new IllegalArgumentException("Book can't be null!");
+                throw new BadRequestException("Book can't be null!");
             }
         }
-
-        return newBookOrder;
-    }
-
-    private void validateInput(List<BookOrderDto> bookOrderDtos) {
-        if (bookOrderDtos.isEmpty()) {
-            throw new IllegalArgumentException("Book Order list cannot be empty");
-        }
+        return order;
     }
 
     public BookOrder saveBookOrder(Order order, Book book, BookOrderDto bookOrderDto) {
+        validateBookStock(book, order.getUser().getLibrary(), bookOrderDto);
         BookOrder bookOrder = new BookOrder();
         bookOrder.setOrder(order);
         bookOrder.setBook(book);
         bookOrder.setSize(bookOrderDto.getSize());
-        bookOrder.setValue((int) ((book.getPrice() != null ? book.getPrice() : 0.0) * bookOrderDto.getSize()));
-        validateBookStock(book, bookOrderDto);
+        bookOrder.setValue((int) ((book.getPrice() != null ? book.getPrice() : 1.0) * bookOrderDto.getSize()));
         bookOrder = bookOrderRepository.save(bookOrder);
         return bookOrder;
     }
 
-    private void validateBookStock(Book book, BookOrderDto bookOrderDto) {
-        LibraryBook libraryBook = libraryBookService.getLibraryBookByBook(book);
-        if (libraryBook.getStock() < bookOrderDto.getSize()) {
-            throw new IllegalArgumentException("There is not enough stock for book: " + bookOrderDto.getBook().getId());
+    private void validateBookStock(Book book, Library library, BookOrderDto bookOrderDto) {
+        LibraryBook libraryBook = libraryBookService.getLibraryBookByBookAndLibrary(book, library);
+        if (libraryBook == null) {
+            throw new BadRequestException("No copy of book: " + book.getId() + " found in library");
+        } else {
+            if (libraryBook.getStock() < bookOrderDto.getSize()) {
+                throw new BadRequestException("There is not enough stock for book: " + bookOrderDto.getBook().getTitle());
+            }
         }
     }
 
@@ -119,7 +113,6 @@ public class OrderService {
 
         order.setStatus(Status.PENDING);
         return save(order);
-
     }
 
     public Order approveOrder(Long orderId, OrderDto orderDto) {
@@ -143,33 +136,34 @@ public class OrderService {
 
     @Transactional(rollbackOn = Exception.class)
     public Order updateOrder(Long orderId, OrderDto orderDto) {
+        List<Long> incomingBookOrderIds = new ArrayList<>();
         Order order = findById(orderId);
         User user = userService.loggedInUser();
         validateUser(order, user);
         validateStatus(order, Status.CREATED);
 
         order.setUserNote(orderDto.getNote());
+        updateBookOrders(orderDto.getBookOrderDtos(), order, incomingBookOrderIds);
+        removeBookOrders(order, incomingBookOrderIds);
 
-        List<BookOrderDto> bookOrderDtoList = orderDto.getBookOrderDtos();
-        validateInput(bookOrderDtoList);
+        return order;
+    }
 
-        List<Long> incomingBookOrderIds = new ArrayList<>();
-
+    private void updateBookOrders(List<BookOrderDto> bookOrderDtoList, Order order, List<Long> incomingBookOrderIds) {
         for (BookOrderDto bookOrderDto : bookOrderDtoList) {
             if (bookOrderDto.getBook().getId() != null) {
                 Book book = bookService.findById(bookOrderDto.getBook().getId());
                 Optional<BookOrder> bookOrder = bookOrderRepository.findByBookAndOrder(book, order);
                 if (bookOrder.isPresent()) {
-                    updateExistingBookOrder(bookOrder.get(), bookOrderDto, book, incomingBookOrderIds);
+                    updateExistingBookOrder(bookOrder.get(), bookOrderDto, book, order.getUser().getLibrary(), incomingBookOrderIds);
                 } else {
                     BookOrder newBookOrder = saveBookOrder(order, book, bookOrderDto);
                     incomingBookOrderIds.add(newBookOrder.getId());
                 }
+            } else {
+                throw new BadRequestException("Book id can't be null!");
             }
         }
-        removeBookOrders(order, incomingBookOrderIds);
-
-        return order;
     }
 
     private void removeBookOrders(Order order, List<Long> incomingBookOrderIds) {
@@ -182,10 +176,10 @@ public class OrderService {
         }
     }
 
-    private void updateExistingBookOrder(BookOrder bookOrder, BookOrderDto bookOrderDto, Book book, List<Long> incomingBookOrderIds) {
+    private void updateExistingBookOrder(BookOrder bookOrder, BookOrderDto bookOrderDto, Book book, Library library, List<Long> incomingBookOrderIds) {
+        validateBookStock(book, library, bookOrderDto);
         bookOrder.setSize(bookOrderDto.getSize());
-        bookOrder.setValue((int) ((book.getPrice() != null ? book.getPrice() : 0.0) * bookOrderDto.getSize()));
-        validateBookStock(book, bookOrderDto);
+        bookOrder.setValue((int) ((book.getPrice() != null ? book.getPrice() : 1.0) * bookOrderDto.getSize()));
         bookOrderRepository.save(bookOrder);
         incomingBookOrderIds.add(bookOrder.getId());
     }
