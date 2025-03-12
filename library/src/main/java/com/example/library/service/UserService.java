@@ -103,8 +103,7 @@ public class UserService {
         // Validate password
         validateUserPassword(addUserRequest.getPassword());
         addUser(user, addUserRequest);
-        save(user);
-        return user;
+        return save(user);
     }
 
     public SimpleUserDto getUserProfile(Long id) {
@@ -121,8 +120,7 @@ public class UserService {
         // Validate password
         validateUserPassword(updateUser.getPassword());
         updateUser(user, updateUser);
-        save(user);
-        return user;
+        return save(user);
     }
 
     public User updateUserPassword (Long id, PasswordRequestDto passwordRequestDto) {
@@ -135,10 +133,10 @@ public class UserService {
         return save(user);
     }
 
-    public User adminActivateUser(Long id) {
+    public void adminActivateUser(Long id) {
         User user = findUserById(id);
         user.setActive(true);
-        return save(user);
+        save(user);
     }
 
     public String createJwtToken(AuthenticationRequestDto authenticationRequestDto) {

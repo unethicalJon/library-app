@@ -21,7 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PostMapping(RestConstants.UserController.SIGN_UP)
     public ResponseEntity<EntityIdDto> postUser(@RequestBody UserDto addUserRequest) {
         User user = userService.postUser(addUserRequest);
@@ -35,12 +35,12 @@ public class UserController {
     }
 
     @PutMapping(RestConstants.UserController.UPDATE)
-    public ResponseEntity<User> updateUserProfile(@PathVariable(value = RestConstants.ID) Long id, @RequestBody SimpleUserDto updatedUser) {
+    public ResponseEntity<EntityIdDto> updateUserProfile(@PathVariable(value = RestConstants.ID) Long id, @RequestBody SimpleUserDto updatedUser) {
         User user = userService.updateUserProfile(id, updatedUser);
-        return new ResponseEntity(EntityIdDto.of(user.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(EntityIdDto.of(user.getId()), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PutMapping(RestConstants.UserController.PASSWORD_CHANGE)
     public ResponseEntity<EntityIdDto> updateUserPassword(@PathVariable(value = RestConstants.ID) Long id,
                                                           @RequestBody PasswordRequestDto passwordRequestDto) {
@@ -49,7 +49,7 @@ public class UserController {
         return new ResponseEntity<>(EntityIdDto.of(user.getId()), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PutMapping(RestConstants.UserController.ACTIVATE_USER)
     public ResponseEntity<String> adminActivateUser(@PathVariable(value = RestConstants.ID) Long id) {
         userService.adminActivateUser(id);

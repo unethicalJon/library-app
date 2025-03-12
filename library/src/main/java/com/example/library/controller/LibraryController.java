@@ -20,22 +20,22 @@ public class LibraryController {
 
     private final LibraryService libraryService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PostMapping(RestConstants.LibraryController.ADD)
     public ResponseEntity<EntityIdDto> registerLibrary(@RequestBody LibraryDto addLibraryRequest) {
         Library library = libraryService.registerLibrary(addLibraryRequest);
         return new ResponseEntity<>(EntityIdDto.of(library.getId()), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PutMapping(RestConstants.LibraryController.UPDATE)
-    public ResponseEntity<Library> updateLibrary(@PathVariable(value = RestConstants.ID) Long id,
+    public ResponseEntity<EntityIdDto> updateLibrary(@PathVariable(value = RestConstants.ID) Long id,
                                                  @RequestBody LibraryDto updatedLibrary) {
         Library library = libraryService.updateLibrary(id, updatedLibrary);
-        return new ResponseEntity(EntityIdDto.of(library.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(EntityIdDto.of(library.getId()), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @DeleteMapping(RestConstants.LibraryController.DELETE)
     public String deleteLibrary(@PathVariable(value = RestConstants.ID) Long id) {
         try {
@@ -46,7 +46,7 @@ public class LibraryController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     public Page<LibraryDto> getLibrariesRoleAdmin(@RequestParam(required = false) String keyword,
                                                   @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_NUMBER) int page,
                                                   @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_SIZE) int size) {
@@ -54,7 +54,7 @@ public class LibraryController {
     }
 
     @GetMapping(RestConstants.LibraryController.LIBRARIES_FOR_USER)
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
     public LibraryDto getLibraryRoleUser() {
         return libraryService.getLibraryRoleUser();
     }

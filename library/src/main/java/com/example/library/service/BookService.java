@@ -5,10 +5,7 @@ import com.example.library.datatype.Section;
 import com.example.library.dto.book.BookDto;
 import com.example.library.entity.Book;
 import com.example.library.entity.User;
-import com.example.library.exceptions.BadRequestException;
 import com.example.library.repository.BookRepository;
-import com.example.library.repository.UserRepository;
-import com.example.library.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -17,14 +14,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.library.security.UserUtil.getLoggedInUser;
 
 @Service
 @AllArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     public void save(Book book) {
@@ -59,16 +55,10 @@ public class BookService {
         return book;
     }
 
-    private User loggedInUser() {
-        CustomUserDetails loggedInUser = getLoggedInUser();
-        return userRepository.findById(loggedInUser.getId())
-                .orElseThrow(() -> new BadRequestException("User not found"));
-    }
 
     public List<Book> getBooksFromUserLibrary() {
-        User user = loggedInUser();
-        List<Book> result = bookRepository.findBooksOfUser(user.getId()).stream().toList();
-        return result;
+        User user = userService.loggedInUser();
+        return bookRepository.findBooksOfUser(user.getId()).stream().toList();
     }
 
     public Page<BookDto> getAllBooks(String keyword, int page, int size) {

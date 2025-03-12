@@ -20,14 +20,14 @@ public class RequestController {
 
     private final RequestService requestService;
 
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
     @PostMapping(RestConstants.RequestController.CREATE)
     public ResponseEntity<EntityIdDto> postRequest(@RequestBody RequestDto requestDto) {
         Request request = requestService.addRequest(requestDto);
         return new ResponseEntity<>(EntityIdDto.of(request.getId()), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PutMapping(RestConstants.RequestController.COMPLETE)
     public ResponseEntity<EntityIdDto> adminActivateUser(@PathVariable(value = RestConstants.ID) Long id) {
         Request request = requestService.completeRequest(id);

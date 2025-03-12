@@ -7,12 +7,13 @@ import com.example.library.exceptions.BadRequestException;
 import com.example.library.repository.LibraryRepository;
 import com.example.library.repository.UserRepository;
 import com.example.library.security.CustomUserDetails;
-import com.example.library.security.UserUtil;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import static com.example.library.security.UserUtil.getLoggedInUser;
 
 @Service
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class LibraryService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public Library save(Library library) {return libraryRepository.save(library);}
+    public Library save(Library library) { return libraryRepository.save(library);}
 
     public Library findById(Long id) {
         return libraryRepository.findById(id)
@@ -49,28 +50,20 @@ public class LibraryService {
         Library library = new Library();
         validateNewName(addLibraryRequest.getName());
         addLibrary(library, addLibraryRequest);
-        save(library);
-        return library;
+        return save(library);
     }
 
     public Library updateLibrary(Long id, LibraryDto editLibraryRequest) {
         Library library = findById(id);
         validateUpdatedName(library.getName(), editLibraryRequest.getName());
         addLibrary(library, editLibraryRequest);
-        save(library);
-        return library;
+        return save(library);
     }
 
     public String deleteLibrary(Long id) {
         findById(id);
         libraryRepository.deleteById(id);
         return "Library with id: " + id + " deleted succesfully";
-    }
-
-    private User loggedInUser() {
-        CustomUserDetails loggedInUser = UserUtil.getLoggedInUser();
-        return userRepository.findById(loggedInUser.getId())
-                .orElseThrow(() -> new BadRequestException("User not found"));
     }
 
     private LibraryDto mapToDto(Library library) {
@@ -84,6 +77,12 @@ public class LibraryService {
     public LibraryDto getLibraryRoleUser() {
         Library library = findById(loggedInUser().getLibrary().getId());
         return mapToDto(library);
+    }
+
+    private User loggedInUser() {
+        CustomUserDetails loggedInUser = getLoggedInUser();
+        return userRepository.findById(loggedInUser.getId())
+                .orElseThrow(() -> new BadRequestException("User not found"));
     }
 
 }

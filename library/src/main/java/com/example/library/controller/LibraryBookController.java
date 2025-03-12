@@ -1,7 +1,6 @@
 package com.example.library.controller;
 
 import com.example.library.dto.librarybook.LibraryBookDto;
-import com.example.library.entity.Book;
 import com.example.library.entity.LibraryBook;
 import com.example.library.service.LibraryBookService;
 import com.example.library.util.constants.RestConstants;
@@ -20,7 +19,7 @@ public class LibraryBookController {
 
     private final LibraryBookService libraryBookService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PutMapping(RestConstants.LibraryBookController.UPDATE_STOCK)
     public ResponseEntity<List<Long>> updateStock(
             @PathVariable(value = RestConstants.ID) Long libraryId,
@@ -30,14 +29,14 @@ public class LibraryBookController {
         return ResponseEntity.ok(updatedLibraryBooks);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @GetMapping()
     public Page<LibraryBookDto> getLibraryBooks(@RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_NUMBER) int page,
                                                 @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_SIZE) int size) {
         return libraryBookService.getLibraryBooks(page, size);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @GetMapping(RestConstants.LibraryBookController.AVAILABLE_BOOKS)
     public Page<LibraryBook> getAvailableBooks( @RequestParam(value = "library", required = false) Long libraryId,
                                                 @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_NUMBER) int page,

@@ -4,6 +4,7 @@ import com.example.library.dto.librarybook.LibraryBookDto;
 import com.example.library.entity.Book;
 import com.example.library.entity.Library;
 import com.example.library.entity.LibraryBook;
+import com.example.library.exceptions.BadRequestException;
 import com.example.library.repository.LibraryBookRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,33 +58,39 @@ public class LibraryBookService {
         validateInput(libraryBookDtos);
         Library library = libraryService.findById(libraryId);
         List<Long> updatedLibraryBooks = new ArrayList<>();
+        handleUpdateStock(libraryId, libraryBookDtos, library, updatedLibraryBooks);
+        return updatedLibraryBooks;
+    }
 
+    private void handleUpdateStock(Long libraryId, List<LibraryBookDto> libraryBookDtos, Library library, List<Long> updatedLibraryBooks) {
         for (LibraryBookDto libraryBookDto : libraryBookDtos) {
-            Book book = bookService.findById(libraryBookDto.getBookId());
-
-            LibraryBook libraryBook;
-            if (libraryBookDto.getId() == null) {
-                // Check if a LibraryBook already exists for the given library and book
-                Optional<LibraryBook> existingBook = libraryBookRepository.findByLibraryAndBook(library, book);
-                if (existingBook.isPresent()) {
-                    // Throw an exception if a matching LibraryBook exists
-                    throw new IllegalArgumentException("You are trying to add a Book (with id:" + libraryBookDto.getBookId() + "), which already exists in LibraryBook." +
-                            "\n If you want to update its' stock, please insert the respective LibraryBookId.");
-                }
-                // Create new LibraryBook if it doesn't exist
-                libraryBook = createNewLibraryBook(library, book, libraryBookDto);
-            } else {
-                // Check if LibraryBookId's LibraryId is the same as PathVariable LibraryId
-                libraryBook = findById(libraryBookDto.getId());
-                if (!Objects.equals(libraryBook.getLibrary().getId(), libraryId)) {
-                    throw new IllegalArgumentException("Library IDs are not matching");
-                }
-                // Update the existing LibraryBook
-                libraryBook = updateExistingLibraryBook(libraryBookDto);
+            if (libraryBookDto.getId() != null && updatedLibraryBooks.contains(libraryBookDto.getId())) {
+                continue; // Skip duplicate updates
             }
+            Book book = bookService.findById(libraryBookDto.getBookId());
+            LibraryBook libraryBook = libraryBookDto.getId() == null
+                    ? handleNewLibraryBook(library, book, libraryBookDto)
+                    : handleExistingLibraryBook(libraryId, libraryBookDto);
+
             updatedLibraryBooks.add(libraryBook.getId());
         }
-        return updatedLibraryBooks;
+    }
+
+    private LibraryBook handleNewLibraryBook(Library library, Book book, LibraryBookDto libraryBookDto) {
+        libraryBookRepository.findByLibraryAndBook(library, book)
+                .ifPresent(existingBook -> {
+                    throw new BadRequestException("Book: " + libraryBookDto.getBookId() + " is a duplicate");
+                });
+        return createNewLibraryBook(library, book, libraryBookDto);
+    }
+
+    private LibraryBook handleExistingLibraryBook(Long libraryId, LibraryBookDto libraryBookDto) {
+        LibraryBook libraryBook = findById(libraryBookDto.getId());
+
+        if (!Objects.equals(libraryBook.getLibrary().getId(), libraryId)) {
+            throw new BadRequestException("Library IDs are not matching");
+        }
+        return updateExistingLibraryBook(libraryBookDto);
     }
 
     public Page<LibraryBookDto> getLibraryBooks(int page, int size) {
@@ -103,7 +109,4 @@ public class LibraryBookService {
         return libraryBookRepository.findLibraryBookByBookAndLibrary(book, library);
     }
 
-    public LibraryBook getLibraryBookByBook(Book book) {
-        return libraryBookRepository.findLibraryBookByBook(book);
-    }
 }

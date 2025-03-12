@@ -22,18 +22,18 @@ public class BookController {
 
     private final BookService bookService;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PostMapping(RestConstants.BookController.ADD)
     public ResponseEntity<EntityIdDto> addBook(@RequestBody BookDto bookDto) {
         Book book = bookService.postBook(bookDto);
         return new ResponseEntity<>(EntityIdDto.of(book.getId()), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PutMapping(RestConstants.BookController.UPDATE)
-    public ResponseEntity<Book> updateBook(@PathVariable(value = RestConstants.ID) Long id, @RequestBody BookDto bookDto) {
+    public ResponseEntity<EntityIdDto> updateBook(@PathVariable(value = RestConstants.ID) Long id, @RequestBody BookDto bookDto) {
         Book book = bookService.updateBook(id, bookDto);
-        return new ResponseEntity(EntityIdDto.of(book.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(EntityIdDto.of(book.getId()), HttpStatus.OK);
     }
 
     @GetMapping(RestConstants.BookController.USER_BOOKS)
@@ -42,7 +42,7 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @GetMapping()
     public Page<BookDto> getAllBooks(@RequestParam(required = false) String keyword,
                                      @RequestParam(defaultValue = RestConstants.DEFAULT_PAGE_NUMBER) int page,
@@ -50,7 +50,7 @@ public class BookController {
         return bookService.getAllBooks(keyword, page, size);
     }
     
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @DeleteMapping(RestConstants.BookController.DELETE)
     public String deleteBook(@PathVariable(value = RestConstants.ID) Long id) {
         try {

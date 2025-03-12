@@ -20,7 +20,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
     @PostMapping(RestConstants.OrderController.CREATE_ORDER)
     public ResponseEntity<Order> createBookOrder(
             @RequestBody OrderDto orderDto) {
@@ -29,25 +29,25 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
     @PutMapping(RestConstants.OrderController.FOR_APPROVAL)
-    public ResponseEntity<Order> sendOrderForApproval(
+    public ResponseEntity<EntityIdDto> sendOrderForApproval(
             @PathVariable(value = RestConstants.ID) Long id) {
 
         Order order = orderService.sendForApproval(id);
-        return new ResponseEntity(EntityIdDto.of(order.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(EntityIdDto.of(order.getId()), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @PutMapping(RestConstants.OrderController.APPROVE_ORDER)
-    public ResponseEntity<Order> approveOrder(@PathVariable(value = RestConstants.ID) Long id,
+    public ResponseEntity<EntityIdDto> approveOrder(@PathVariable(value = RestConstants.ID) Long id,
                                              @RequestBody OrderDto orderDto) {
         Order order = orderService.approveOrder(id, orderDto);
-        return new ResponseEntity(EntityIdDto.of(order.getId()), HttpStatus.OK);
+        return new ResponseEntity<>(EntityIdDto.of(order.getId()), HttpStatus.OK);
     }
 
 
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
     @PutMapping(RestConstants.OrderController.UPDATE_ORDER)
     public ResponseEntity<Order> updateOrder(@PathVariable(value = RestConstants.ID) Long id,
                                              @Validated @RequestBody OrderDto orderDto) {

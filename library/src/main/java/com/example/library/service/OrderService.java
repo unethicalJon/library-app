@@ -1,26 +1,17 @@
 package com.example.library.service;
 
 import com.example.library.datatype.Status;
-import com.example.library.dto.book.BookDto;
 import com.example.library.dto.bookorder.BookOrderDto;
-import com.example.library.dto.librarybook.LibraryBookDto;
 import com.example.library.dto.order.OrderDto;
-import com.example.library.dto.request.SimpleRequestDto;
 import com.example.library.entity.*;
 import com.example.library.exceptions.BadRequestException;
 import com.example.library.repository.BookOrderRepository;
 import com.example.library.repository.OrderRepository;
-import com.example.library.repository.UserRepository;
-import com.example.library.security.CustomUserDetails;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.example.library.security.UserUtil.getLoggedInUser;
 
 @Service
 @RequiredArgsConstructor
@@ -150,8 +141,10 @@ public class OrderService {
     }
 
     private void updateBookOrders(List<BookOrderDto> bookOrderDtoList, Order order, List<Long> incomingBookOrderIds) {
+        Set<Long> processedBookIds = new HashSet<>();
         for (BookOrderDto bookOrderDto : bookOrderDtoList) {
             if (bookOrderDto.getBook().getId() != null) {
+                validateBookDuplicates(bookOrderDto.getBook().getId(), processedBookIds);
                 Book book = bookService.findById(bookOrderDto.getBook().getId());
                 Optional<BookOrder> bookOrder = bookOrderRepository.findByBookAndOrder(book, order);
                 if (bookOrder.isPresent()) {
@@ -184,6 +177,12 @@ public class OrderService {
         incomingBookOrderIds.add(bookOrder.getId());
     }
 
+    private void validateBookDuplicates(Long bookId, Set<Long> processedBookIds){
+        if (processedBookIds.contains(bookId)) {
+            throw new BadRequestException("Duplicate books detected: " + bookId);
+        }
+        processedBookIds.add(bookId);
+    }
 }
 
 

@@ -21,5 +21,4 @@ public interface LibraryBookRepository extends JpaRepository<LibraryBook, Long> 
 
     LibraryBook findLibraryBookByBookAndLibrary(Book book, Library library);
 
-    LibraryBook findLibraryBookByBook(Book book);
 }
