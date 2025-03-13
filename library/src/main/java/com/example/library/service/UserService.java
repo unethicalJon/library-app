@@ -4,7 +4,7 @@ import com.example.library.datatype.Role;
 import com.example.library.dto.auth.AuthenticationRequestDto;
 import com.example.library.dto.user.PasswordRequestDto;
 import com.example.library.dto.user.UserDto;
-import com.example.library.dto.user.SimpleUserDto;
+import com.example.library.dto.user.UserDetailsDto;
 import com.example.library.entity.Library;
 import com.example.library.entity.User;
 import com.example.library.exceptions.BadRequestException;
@@ -86,7 +86,7 @@ public class UserService {
         user.setLibrary(library);
     }
 
-    public void updateUser(User user, SimpleUserDto simpleUserDto) {
+    public void updateUser(User user, UserDetailsDto simpleUserDto) {
         user.setName(simpleUserDto.getName());
         user.setSurname(simpleUserDto.getSurname());
         user.setEmail(simpleUserDto.getEmail());
@@ -106,13 +106,13 @@ public class UserService {
         return save(user);
     }
 
-    public SimpleUserDto getUserProfile(Long id) {
+    public UserDetailsDto getUserProfile(Long id) {
         User user = findUserById(id);
         // Convert the User entity to a SimpleUserDto
-        return modelMapper.map(user, SimpleUserDto.class);
+        return modelMapper.map(user, UserDetailsDto.class);
     }
 
-    public User updateUserProfile(Long id, SimpleUserDto updateUser) {
+    public User updateUserProfile(Long id, UserDetailsDto updateUser) {
         // findUserById method implementation
         User user = findUserById(id);
         // Validate the username before updating

@@ -2,7 +2,7 @@ package com.example.library.controller;
 
 import com.example.library.dto.general.EntityIdDto;
 import com.example.library.dto.user.PasswordRequestDto;
-import com.example.library.dto.user.SimpleUserDto;
+import com.example.library.dto.user.UserDetailsDto;
 import com.example.library.dto.user.UserDto;
 import com.example.library.entity.User;
 import com.example.library.service.UserService;
@@ -29,13 +29,13 @@ public class UserController {
     }
 
     @GetMapping(RestConstants.ID_PATH)
-    public ResponseEntity<SimpleUserDto> getUserProfile(@PathVariable(value = RestConstants.ID) Long id) {
-        SimpleUserDto userDto = userService.getUserProfile(id);
+    public ResponseEntity<UserDetailsDto> getUserProfile(@PathVariable(value = RestConstants.ID) Long id) {
+        UserDetailsDto userDto = userService.getUserProfile(id);
         return ResponseEntity.ok(userDto);
     }
 
     @PutMapping(RestConstants.UserController.UPDATE)
-    public ResponseEntity<EntityIdDto> updateUserProfile(@PathVariable(value = RestConstants.ID) Long id, @RequestBody SimpleUserDto updatedUser) {
+    public ResponseEntity<EntityIdDto> updateUserProfile(@PathVariable(value = RestConstants.ID) Long id, @RequestBody UserDetailsDto updatedUser) {
         User user = userService.updateUserProfile(id, updatedUser);
         return new ResponseEntity<>(EntityIdDto.of(user.getId()), HttpStatus.CREATED);
     }

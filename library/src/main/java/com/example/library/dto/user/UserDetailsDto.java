@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class SimpleUserDto {
+public class UserDetailsDto {
 
     private Long id;
 

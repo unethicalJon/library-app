@@ -2,16 +2,21 @@ package com.example.library.service;
 
 import com.example.library.datatype.Status;
 import com.example.library.dto.bookorder.BookOrderDto;
+import com.example.library.dto.bookorder.SimpleBookOrderDto;
 import com.example.library.dto.order.OrderDto;
+import com.example.library.dto.order.SimpleOrderDto;
 import com.example.library.entity.*;
 import com.example.library.exceptions.BadRequestException;
 import com.example.library.repository.BookOrderRepository;
 import com.example.library.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -182,6 +187,20 @@ public class OrderService {
             throw new BadRequestException("Duplicate books detected: " + bookId);
         }
         processedBookIds.add(bookId);
+    }
+
+    public Page<SimpleOrderDto> getOrders(int page, int size) {
+        User user = userService.loggedInUser();
+        Page<Order> orders = switch (user.getRole()) {
+            case ADMIN -> orderRepository.findAll(PageRequest.of(page, size));
+            case USER -> orderRepository.findByUser(user, PageRequest.of(page, size));
+        };
+        return orders.map(SimpleOrderDto::convertToSimpleOrderDto);
+    }
+
+    public Page<SimpleOrderDto> getPendingOrders(int page, int size) {
+        Page<Order> orders = orderRepository.findByStatus(Status.PENDING, PageRequest.of(page, size));
+        return orders.map(SimpleOrderDto::convertToSimpleOrderDto);
     }
 }
 

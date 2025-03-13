@@ -77,16 +77,6 @@ public interface RestConstants {
         String AVAILABLE_BOOKS = "/available-books";
     }
 
-    interface RequestController {
-
-        String BASE = ROOT + "/request";
-
-        String CREATE = "/create";
-
-        String COMPLETE = "/complete" + ID_PATH;
-
-    }
-
     interface OrderController {
 
         String BASE = ROOT + "/order";
@@ -98,6 +88,8 @@ public interface RestConstants {
         String UPDATE_ORDER = "/update" + ID_PATH;
 
         String FOR_APPROVAL = "/for-approval" + ID_PATH;
+
+        String PENDING = "/pending";
     }
 
 
