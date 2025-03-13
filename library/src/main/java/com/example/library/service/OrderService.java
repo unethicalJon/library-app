@@ -2,7 +2,6 @@ package com.example.library.service;
 
 import com.example.library.datatype.Status;
 import com.example.library.dto.bookorder.BookOrderDto;
-import com.example.library.dto.bookorder.SimpleBookOrderDto;
 import com.example.library.dto.order.OrderDto;
 import com.example.library.dto.order.SimpleOrderDto;
 import com.example.library.entity.*;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -80,7 +78,7 @@ public class OrderService {
     }
 
     public BookOrder saveBookOrder(Order order, Book book, BookOrderDto bookOrderDto) {
-        validateBookStock(book, order.getUser().getLibrary(), bookOrderDto);
+        validateBookStockForPayload(book, order.getUser().getLibrary(), bookOrderDto);
         BookOrder bookOrder = new BookOrder();
         bookOrder.setOrder(order);
         bookOrder.setBook(book);
@@ -90,14 +88,25 @@ public class OrderService {
         return bookOrder;
     }
 
-    private void validateBookStock(Book book, Library library, BookOrderDto bookOrderDto) {
+    private LibraryBook checkAndGetLibraryBookByBookAndLibrary(Book book, Library library) {
         LibraryBook libraryBook = libraryBookService.getLibraryBookByBookAndLibrary(book, library);
         if (libraryBook == null) {
             throw new BadRequestException("No copy of book: " + book.getId() + " found in library");
-        } else {
+        }
+        return libraryBook;
+    }
+
+    private void validateBookStockForPayload(Book book, Library library, BookOrderDto bookOrderDto) {
+        LibraryBook libraryBook = checkAndGetLibraryBookByBookAndLibrary(book, library);
             if (libraryBook.getStock() < bookOrderDto.getSize()) {
                 throw new BadRequestException("There is not enough stock for book: " + bookOrderDto.getBook().getTitle());
-            }
+        }
+    }
+
+    private void validateBookStockForDatabase(Book book, Library library, BookOrder bookOrder) {
+        LibraryBook libraryBook = checkAndGetLibraryBookByBookAndLibrary(book, library);
+        if (libraryBook.getStock() < bookOrder.getSize()) {
+            throw new BadRequestException("There is not enough stock for book: " + bookOrder.getBook().getTitle());
         }
     }
 
@@ -111,6 +120,7 @@ public class OrderService {
         return save(order);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public Order approveOrder(Long orderId, OrderDto orderDto) {
         Order order = findById(orderId);
         validateStatus(order, Status.PENDING);
@@ -122,6 +132,7 @@ public class OrderService {
             case REFUSED -> order.setAdminNote(orderDto.getNote());
             case ACCEPTED -> {
                 for (BookOrder bookOrder : bookOrders) {
+                    validateBookStockForDatabase(bookOrder.getBook(), order.getUser().getLibrary(), bookOrder);
                     LibraryBook libraryBook = libraryBookService.getLibraryBookByBookAndLibrary(bookOrder.getBook(), order.getUser().getLibrary());
                     libraryBook.setStock(libraryBook.getStock() - bookOrder.getSize());
                 }
@@ -175,7 +186,7 @@ public class OrderService {
     }
 
     private void updateExistingBookOrder(BookOrder bookOrder, BookOrderDto bookOrderDto, Book book, Library library, List<Long> incomingBookOrderIds) {
-        validateBookStock(book, library, bookOrderDto);
+        validateBookStockForPayload(book, library, bookOrderDto);
         bookOrder.setSize(bookOrderDto.getSize());
         bookOrder.setValue((int) ((book.getPrice() != null ? book.getPrice() : 1.0) * bookOrderDto.getSize()));
         bookOrderRepository.save(bookOrder);

@@ -24,11 +24,11 @@ public class OrderController {
 
     @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
     @PostMapping(RestConstants.OrderController.CREATE_ORDER)
-    public ResponseEntity<Order> createBookOrder(
+    public ResponseEntity<EntityIdDto> createBookOrder(
             @RequestBody OrderDto orderDto) {
 
         Order order = orderService.createBookOrder(orderDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(order);
+        return new ResponseEntity<>(EntityIdDto.of(order.getId()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
@@ -51,10 +51,10 @@ public class OrderController {
 
     @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
     @PutMapping(RestConstants.OrderController.UPDATE_ORDER)
-    public ResponseEntity<Order> updateOrder(@PathVariable(value = RestConstants.ID) Long id,
+    public ResponseEntity<EntityIdDto> updateOrder(@PathVariable(value = RestConstants.ID) Long id,
                                              @Validated @RequestBody OrderDto orderDto) {
         Order order = orderService.updateOrder(id, orderDto);
-        return ResponseEntity.ok(order);
+        return new ResponseEntity<>(EntityIdDto.of(order.getId()), HttpStatus.OK);
     }
 
     @GetMapping()

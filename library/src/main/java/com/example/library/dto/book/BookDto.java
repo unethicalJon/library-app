@@ -10,8 +10,6 @@ import java.time.LocalDate;
 @Data
 public class BookDto {
 
-    //test for branch
-    //test 2 for branch
     private Long id;
 
     @NotBlank(message = "Title is required")
