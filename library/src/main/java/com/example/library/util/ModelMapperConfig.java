@@ -1,4 +1,4 @@
-package com.example.library.util.constants;
+package com.example.library.util;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

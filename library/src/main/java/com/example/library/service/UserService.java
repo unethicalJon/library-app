@@ -38,6 +38,7 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailService customUserDetailService;
+    private final EmailService emailService;
 
     public User save(User user) {
         return userRepository.save(user);
@@ -126,7 +127,7 @@ public class UserService {
     public User updateUserPassword (Long id, PasswordRequestDto passwordRequestDto) {
         User user = findUserById(id);
         if (!passwordRequestDto.getNewPassword().equals(passwordRequestDto.getConfirmationPassword())) {
-            throw new IllegalStateException("Passwords do not match");
+            throw new BadRequestException("Passwords do not match");
         }
         validateUserPassword(passwordRequestDto.getConfirmationPassword());
         user.setPassword(passwordEncoder.encode(passwordRequestDto.getConfirmationPassword()));
@@ -137,6 +138,7 @@ public class UserService {
         User user = findUserById(id);
         user.setActive(true);
         save(user);
+        emailService.sendActivationEmail(user);
     }
 
     public String createJwtToken(AuthenticationRequestDto authenticationRequestDto) {

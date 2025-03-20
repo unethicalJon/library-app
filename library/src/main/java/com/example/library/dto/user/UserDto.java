@@ -24,9 +24,5 @@ public class UserDto {
     @NotBlank(message = "password is required!")
     private String password;
 
-    private String role;
-
-    private boolean active;
-
     private LibraryDto library;
 }
