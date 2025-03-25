@@ -39,5 +39,4 @@ public class SimpleOrderDto {
         dto.setBookOrders(bookOrderDtos);
         return dto;
     }
-
 }

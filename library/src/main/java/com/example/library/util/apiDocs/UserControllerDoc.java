@@ -28,7 +28,8 @@ public class UserControllerDoc {
                 responses = {
                         @ApiResponse(responseCode = "201", description = "User created successfully"),
                         @ApiResponse(responseCode = "400", description = "Bad request", content = {
-                                @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ResponseError.class))
+                                @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                        schema = @Schema(implementation = ResponseError.class))
                         }),
                         @ApiResponse(responseCode = "500", description = "Internal server error")
                 }
