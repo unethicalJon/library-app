@@ -19,5 +19,4 @@ public class SimpleBookDto {
         dto.setAuthor(book.getAuthor());
         return dto;
     }
-
 }

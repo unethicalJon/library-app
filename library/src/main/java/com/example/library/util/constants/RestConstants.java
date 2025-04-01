@@ -92,5 +92,9 @@ public interface RestConstants {
         String PENDING = "/pending";
     }
 
+    interface BookOrderController {
+
+        String BASE = ROOT + "/bookorder";
+    }
 
 }

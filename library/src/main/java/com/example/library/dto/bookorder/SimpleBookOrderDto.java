@@ -17,5 +17,4 @@ public class SimpleBookOrderDto {
         dto.setSize(bookOrder.getSize());
         return dto;
     }
-
 }

@@ -73,7 +73,7 @@ public class OrderControllerDoc {
             summary = "Update an order",
             description = "Allows a user to update an existing order. \n\n" +
                     "**Order can only be updated if it's in status created.** \n\n" +
-                    "User sends a list of book where he can: \n" +
+                    "User can: \n" +
                     "- Add new books to the order. \n" +
                     "- Update existing books in the order. (their stock) \n" +
                     "- Remove books from order. **(if they are left out from the list)** \n\n" +

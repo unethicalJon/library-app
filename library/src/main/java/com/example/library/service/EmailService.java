@@ -31,8 +31,8 @@ public class EmailService {
 
             // Prepare parameters for the Brevo template
             Map<String, Object> params = new HashMap<>();
-            params.put("FIRSTNAME", user.getName());
-            params.put("LASTNAME", user.getSurname());
+            params.put("firstname", user.getName());
+            params.put("lastname", user.getSurname());
 
             // Create the email request
             SendSmtpEmail email = new SendSmtpEmail()
