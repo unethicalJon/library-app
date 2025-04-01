@@ -213,6 +213,10 @@ public class OrderService {
         Page<Order> orders = orderRepository.findByStatus(Status.PENDING, PageRequest.of(page, size));
         return orders.map(SimpleOrderDto::convertToSimpleOrderDto);
     }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAllByIdAsc();
+    }
 }
 
 

@@ -1,7 +1,5 @@
 package com.example.library.service;
 
-import com.example.library.dto.book.SimpleBookDto;
-import com.example.library.dto.bookorder.SimpleBookOrderDto;
 import com.example.library.dto.bookorder.Top3BooksDto;
 import com.example.library.entity.Book;
 import com.example.library.entity.BookOrder;
@@ -30,5 +28,9 @@ public class BookOrderService {
                     return Top3BooksDto.convertToTop3BooksDto(book, totalSize, year);
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<BookOrder> getAllBookOrders() {
+        return bookOrderRepository.findAllByIdAsc();
     }
 }

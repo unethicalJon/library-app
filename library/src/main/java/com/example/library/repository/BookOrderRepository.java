@@ -26,4 +26,7 @@ public interface BookOrderRepository extends JpaRepository<BookOrder, Long> {
             "GROUP BY bo.book " +
             "ORDER BY SUM(bo.size) DESC")
     List<Object[]> findTopSellingBooks(int year, Pageable pageable);
+
+    @Query("SELECT bo FROM BookOrder bo ORDER BY bo.id ASC")
+    List<BookOrder> findAllByIdAsc();
 }
