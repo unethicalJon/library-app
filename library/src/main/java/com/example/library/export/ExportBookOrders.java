@@ -57,7 +57,7 @@ public class ExportBookOrders {
 
         // Create header row for BookOrders at row 5, column C
         Row bookOrderHeaderRow = bookOrderSheet.createRow(4);
-        String[] bookOrderHeaders = {"Order ID", "Order Number", "User", "User Note", "Admin Note", "Order Status", "Book ID", "Book Title", "Size", "Value"};
+        String[] bookOrderHeaders = {"BookOrder Number", "User", "User Note", "Admin Note", "Order Status", "Book Title", "Size", "Value"};
         for (int i = 0; i < bookOrderHeaders.length; i++) {
             Cell cell = bookOrderHeaderRow.createCell(i + 2); // Start at column C
             cell.setCellValue(bookOrderHeaders[i]);
@@ -66,18 +66,17 @@ public class ExportBookOrders {
 
         // Populate data rows for BookOrders
         int bookOrderRowNum = 5; // Start at row 6
+        int orderNumber = 1; // Start orders at 1
         for (BookOrder bookOrder : bookOrders) {
             Row row = bookOrderSheet.createRow(bookOrderRowNum++);
-            row.createCell(2).setCellValue(bookOrder.getOrder().getId());
-            row.createCell(3).setCellValue(bookOrder.getOrder().getOrderNumber());
-            row.createCell(4).setCellValue(bookOrder.getOrder().getUser().getName() + " " + bookOrder.getOrder().getUser().getSurname());
-            row.createCell(5).setCellValue(bookOrder.getOrder().getUserNote());
-            row.createCell(6).setCellValue(bookOrder.getOrder().getAdminNote());
-            row.createCell(7).setCellValue(bookOrder.getOrder().getStatus().name);
-            row.createCell(8).setCellValue(bookOrder.getBook().getId());
-            row.createCell(9).setCellValue(bookOrder.getBook().getTitle());
-            row.createCell(10).setCellValue(bookOrder.getSize());
-            row.createCell(11).setCellValue(bookOrder.getValue());
+            row.createCell(2).setCellValue(orderNumber++);
+            row.createCell(3).setCellValue(bookOrder.getOrder().getUser().getName() + " " + bookOrder.getOrder().getUser().getSurname());
+            row.createCell(4).setCellValue(bookOrder.getOrder().getUserNote());
+            row.createCell(5).setCellValue(bookOrder.getOrder().getAdminNote());
+            row.createCell(6).setCellValue(bookOrder.getOrder().getStatus().name);
+            row.createCell(7).setCellValue(bookOrder.getBook().getTitle());
+            row.createCell(8).setCellValue(bookOrder.getSize());
+            row.createCell(9).setCellValue(bookOrder.getValue());
 
             // Apply style to all cells in the row
             for (int i = 0; i < bookOrderHeaders.length; i++) {

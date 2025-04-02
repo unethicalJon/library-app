@@ -4,6 +4,7 @@ import com.example.library.dto.bookorder.Top3BooksDto;
 import com.example.library.entity.BookOrder;
 import com.example.library.export.ExportBookOrders;
 import com.example.library.service.BookOrderService;
+import com.example.library.util.apiDocs.BookOrderControllerDoc;
 import com.example.library.util.constants.RestConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -26,12 +27,14 @@ public class BookOrderController {
     private final ExportBookOrders exportBookOrders;
 
     @GetMapping(RestConstants.BookOrderController.TOP_3)
+    @BookOrderControllerDoc.GetTopSellingBooksDoc
     public ResponseEntity<List<Top3BooksDto>> getTopSellingBooks(@RequestParam int year) {
         List<Top3BooksDto> topBooks = bookOrderService.getTopSellingBooks(year);
         return ResponseEntity.ok(topBooks);
     }
 
     @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
+    @BookOrderControllerDoc.ExportBookOrdersDoc
     @GetMapping(RestConstants.BookOrderController.EXPORT)
     public ResponseEntity<byte[]> exportBookOrders() throws IOException {
 

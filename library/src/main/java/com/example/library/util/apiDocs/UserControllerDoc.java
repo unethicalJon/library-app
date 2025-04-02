@@ -88,7 +88,9 @@ public class UserControllerDoc {
         @Retention(RetentionPolicy.RUNTIME)
         @Operation(
                 summary = "Activate a user",
-                description = "Allows an admin to activate a deactivated user.",
+                description = "Allows an admin to activate a deactivated user." +
+                        "  **Upon activating the user an activation confirmation email will be sent" +
+                        "to their email address**",
                 responses = {
                         @ApiResponse(responseCode = "200", description = "User activated successfully"),
                         @ApiResponse(responseCode = "403", description = "Access denied"),
