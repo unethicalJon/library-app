@@ -57,7 +57,7 @@ public class ExportBookOrders {
 
         // Create header row for BookOrders at row 5, column C
         Row bookOrderHeaderRow = bookOrderSheet.createRow(4);
-        String[] bookOrderHeaders = {"BookOrder Number", "User", "User Note", "Admin Note", "Order Status", "Book Title", "Size", "Value"};
+        String[] bookOrderHeaders = {"Serial Number", "User", "User Note", "Admin Note", "Order Status", "Book Title", "Size", "Value"};
         for (int i = 0; i < bookOrderHeaders.length; i++) {
             Cell cell = bookOrderHeaderRow.createCell(i + 2); // Start at column C
             cell.setCellValue(bookOrderHeaders[i]);

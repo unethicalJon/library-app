@@ -33,4 +33,17 @@ public class BookOrderControllerDoc {
             }
     )
     public @interface ExportBookOrdersDoc {}
+
+    @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Operation(
+            summary = "Generates the invoice of an order in a pdf format",
+            description = "Allows an admin to generate a PDF File that contains information about an order's number, buyer, " +
+                    "seller, books sold, library where purchased and total price including vat.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "File exported successfully"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public @interface GenerateInvoicePdf {}
 }

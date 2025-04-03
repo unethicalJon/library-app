@@ -3,6 +3,7 @@ package com.example.library.service;
 import com.example.library.dto.bookorder.Top3BooksDto;
 import com.example.library.entity.Book;
 import com.example.library.entity.BookOrder;
+import com.example.library.entity.Order;
 import com.example.library.repository.BookOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -32,5 +33,9 @@ public class BookOrderService {
 
     public List<BookOrder> getAllBookOrders() {
         return bookOrderRepository.findAllByIdAsc();
+    }
+
+    public List<BookOrder> getBookOrderByOrderId(Long orderId) {
+        return bookOrderRepository.findByOrderId(orderId);
     }
 }

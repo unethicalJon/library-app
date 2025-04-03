@@ -29,4 +29,6 @@ public interface BookOrderRepository extends JpaRepository<BookOrder, Long> {
 
     @Query("SELECT bo FROM BookOrder bo ORDER BY bo.id ASC")
     List<BookOrder> findAllByIdAsc();
+
+    List<BookOrder> findByOrderId(Long orderId);
 }

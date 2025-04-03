@@ -101,5 +101,7 @@ public interface RestConstants {
         String TOP_3 = "/top-3";
 
         String EXPORT = "/export";
+
+        String INVOICE = "/invoice" + ID_PATH;
     }
 }
