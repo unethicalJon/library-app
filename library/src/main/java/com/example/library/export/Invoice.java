@@ -25,7 +25,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 
 
@@ -46,8 +48,11 @@ public class Invoice {
         Paragraph onesp = createParagraphWithFontSize("\n", 8);
 
         // Logo
-        String logoPath ="C:\\Users\\User\\Downloads\\EDEN BOOKS.png";
-        ImageData imageData = ImageDataFactory.create(logoPath);
+        InputStream logoStream = getClass().getClassLoader().getResourceAsStream("static/images/EDEN BOOKS.png");
+        if (logoStream == null) {
+            throw new FileNotFoundException("Logo image not found");
+        }
+        ImageData imageData = ImageDataFactory.create(logoStream.readAllBytes());
         Image logo = new Image(imageData);
         logo.scaleToFit(100, 100);
         logo.setFixedPosition(30, 700);
