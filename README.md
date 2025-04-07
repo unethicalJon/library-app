@@ -1,32 +1,29 @@
 ## 📘 Library Management System
 
+A powerful and extensible Spring Boot REST API project that supports secure CRUD operations, statistics, Excel/PDF file handling, and transactional emails with Brevo.
+
 ## 📄 Table of Contents
-Overview
-
-Features
-
-Tech Stack
-
-Getting Started
-
-API Documentation
-
-Security
-
-Working with Files
-
-Statistics
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Tech Stack](#tech-stack)
+4. [Getting Started](#getting-started)
+5. [API Documentation](#api-documentation)
+6. [Security](#security)
+7. [Working with Files](#working-with-files)
+8. [Statistics](#statistics)
+9. [Transactional Emails (Brevo)](#transactional-emails-brevo)
 
 ##  🔍 Overview
+
 Explain what the project is, what problems it solves, and who it's for. Include any relevant context.
 
 ##  🚀 Features
 
-🔒 Spring Security (JWT/Basic Auth/etc.)
+🔒 Spring Security (JWT)
 
-📊 Statistics endpoint(s)
+📊 Statistics endpoints
 
-🗃 CRUD Operations (on [Entities])
+🗃 FULL CRUD Operations 
 
 ✉️ Transactional Emails via Brevo SMTP
 
@@ -37,6 +34,7 @@ Explain what the project is, what problems it solves, and who it's for. Include 
 📡 RESTful API
 
 ##  🧰 Tech Stack
+
 Java 21+
 
 Spring Boot
@@ -55,52 +53,47 @@ iText/OpenPDF (PDF)
 
 Swagger (for API docs, if applicable)
 
-⚙️ Getting Started
+## ⚙️ Getting Started
 Prerequisites
-Java 17+
+Java 21+
 
 Maven
 
-[Database name]
+library.db (PostgreSQL)
 
 Setup Instructions
 bash
 Copy
 Edit
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/unethicalJon/library-app.git
+cd library-app
 ./mvnw spring-boot:run
-Or detailed steps for IDE setup, database config, etc.
 
-📡 API Documentation
+## 📡 API Documentation
 http://localhost:8080/swagger-ui/index.html
 
-🔐 Security
+## 🔐 Security
 
 JWT Authentication (Bearer Token)
 
 All routes are role protected
 
-📁 Working with Files
-Excel
-Export instructions
+## 📁 Working with Files
+📊 Excel
 
-Sample file formats
+Orders.xlsx & BookOrders.xlsx
 
-PDF
-What documents are generated?
+📄 PDF
 
-Download routes or triggers
+Order Invoice 
 
-Examples
+invoice_orderNumber.pdf
 
-📊 Statistics
-What kind of statistics are provided?
+## 📊 Statistics
 
-How often are they updated?
+Top 3 Selling Books by year
 
-Routes and example payloads
+## ✉️ Transactional Emails (Brevo)
 
-
-
+Dynamic and automatic activation email with Brevo template.
 
