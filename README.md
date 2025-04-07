@@ -17,7 +17,7 @@ A powerful and extensible Spring Boot REST API project that supports secure CRUD
 
 This project is a Spring Boot REST API that serves as the backend for a multi-library book ordering system. It allows registered users to interact with one or more libraries, view available books, and place orders. Each user is associated with one library, and libraries manage their own book inventories. The system provides full CRUD operations for managing users, libraries, books, and orders.
 
-Key features include secure user registration and authentication, detailed role-based access control, and transactional support for book orders. Administrators can manage libraries and their book collections, while regular users can browse and request books from their associated libraries. The API also supports exporting data to Excel, generating order receipts in PDF format, and sending transactional email notifications (e.g., order confirmations) through Brevo SMTP.
+Key features include secure user registration and authentication, detailed role-based access control, and transactional support for book orders. Administrators can manage libraries and their book collections, while regular users can browse and request books from their associated libraries. The API also supports exporting data to Excel, generating order receipts in PDF format, and sending transactional emails through Brevo SMTP.
 
 This architecture promotes clean separation of concerns, scalability for multi-library environments, and flexibility for future integration with frontend applications or external services.
 
