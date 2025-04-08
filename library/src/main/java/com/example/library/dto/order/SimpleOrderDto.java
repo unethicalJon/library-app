@@ -16,6 +16,8 @@ public class SimpleOrderDto {
 
     private Status status;
 
+    private int year;
+
     private String userNote;
 
     private String adminNote;
@@ -28,6 +30,7 @@ public class SimpleOrderDto {
         SimpleOrderDto dto = new SimpleOrderDto();
         dto.setId(order.getId());
         dto.setStatus(order.getStatus());
+        dto.setYear(order.getYear());
         dto.setUserNote(order.getUserNote() != null ? order.getUserNote() : " ");
         dto.setAdminNote(order.getAdminNote() != null ? order.getAdminNote() : " ");
         dto.setUser(SimpleUserDto.convertToSimpleUserDto(order.getUser()));

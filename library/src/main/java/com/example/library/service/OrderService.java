@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -57,6 +58,7 @@ public class OrderService {
         order.setOrderNumber(getLatestOrderNumber() != null ? getLatestOrderNumber() + 1 : 1);
         order.setUser(user);
         order.setStatus(Status.CREATED);
+        order.setYear(LocalDate.now().getYear());
         order.setUserNote(orderDto.getNote());
         return save(order);
     }

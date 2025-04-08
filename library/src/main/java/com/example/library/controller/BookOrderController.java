@@ -39,7 +39,7 @@ public class BookOrderController {
     @GetMapping(RestConstants.BookOrderController.EXPORT)
     public ResponseEntity<byte[]> exportBookOrders() throws IOException {
 
-        List<BookOrder> bookOrders = bookOrderService.getAllBookOrders();
+        List<BookOrder> bookOrders = bookOrderService.getAcceptedBookOrders();
 
         byte[] excelData = exportBookOrders.bookOrdersExcel(bookOrders);
 

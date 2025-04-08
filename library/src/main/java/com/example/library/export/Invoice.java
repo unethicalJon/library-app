@@ -4,6 +4,8 @@ package com.example.library.export;
 import com.example.library.entity.BookOrder;
 import com.example.library.entity.Order;
 import com.example.library.service.OrderService;
+import com.itextpdf.barcodes.Barcode128;
+import com.itextpdf.barcodes.BarcodeQRCode;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.DeviceRgb;
@@ -48,11 +50,8 @@ public class Invoice {
         Paragraph onesp = createParagraphWithFontSize("\n", 8);
 
         // Logo
-        InputStream logoStream = getClass().getClassLoader().getResourceAsStream("static/images/EDEN BOOKS.png");
-        if (logoStream == null) {
-            throw new FileNotFoundException("Logo image not found");
-        }
-        ImageData imageData = ImageDataFactory.create(logoStream.readAllBytes());
+        String logoPath = "src/main/resources/static/images/EDEN BOOKS.png";
+        ImageData imageData = ImageDataFactory.create(logoPath);
         Image logo = new Image(imageData);
         logo.scaleToFit(100, 100);
         logo.setFixedPosition(30, 700);
@@ -257,6 +256,15 @@ public class Invoice {
         // Space
         document.add(onesp);
 
+        // QR Code
+        String qrData = "Order ID: " + order.getId();
+        BarcodeQRCode qrCode = new BarcodeQRCode(qrData);
+        Image qrImage = new Image(qrCode.createFormXObject(pdf));
+        qrImage.setWidth(80);
+        qrImage.setFixedPosition(260, 55);
+
+        document.add(qrImage);
+
         // Footer
         float xStart = 0;
         float xEnd = 595;
@@ -267,12 +275,16 @@ public class Invoice {
         canvas.lineTo(xEnd, yPosition);
         canvas.stroke();
 
-        Paragraph footerText = createParagraphWithFontSize("Eden Books Shpk", 8)
+        Paragraph footerText1 = createParagraphWithFontSize("Eden Books Shpk", 8)
                 .setTextAlignment(TextAlignment.CENTER)
-                .setFixedPosition(0, yPosition - 20, PageSize.A4.getWidth());
+                .setFixedPosition(0, yPosition - 25, PageSize.A4.getWidth());
 
+        Paragraph footerText2 = createParagraphWithFontSize("©" + LocalDate.now().getYear(), 8)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFixedPosition(0, yPosition - 40, PageSize.A4.getWidth());
 
-        document.add(footerText);
+        document.add(footerText1);
+        document.add(footerText2);
 
         document.close();
 

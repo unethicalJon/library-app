@@ -31,11 +31,11 @@ public class BookOrderService {
                 .collect(Collectors.toList());
     }
 
-    public List<BookOrder> getAllBookOrders() {
-        return bookOrderRepository.findAllByIdAsc();
+    public List<BookOrder> getAcceptedBookOrders() {
+        return bookOrderRepository.findAcceptedByIdAsc();
     }
 
-    public List<BookOrder> getBookOrderByOrderId(Long orderId) {
-        return bookOrderRepository.findByOrderId(orderId);
+    public List<BookOrder> getAllBookOrders() {
+        return bookOrderRepository.findAllByIdAsc();
     }
 }

@@ -15,6 +15,8 @@ public class OrderDto {
 
     private Status status;
 
+    private int year;
+
     @NotEmpty(message = "Book list cannot be empty")
     @Valid
     private List<BookOrderDto> bookOrderDtos;
