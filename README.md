@@ -95,9 +95,50 @@ Order Invoice
 
 invoice_order_orderId.pdf
 
+![image](https://github.com/user-attachments/assets/53d228ad-b90b-4c51-9135-d5c9277bf697)
+
+
 ## 📊 Statistics
 
 Top 3 Selling Books by year
+
+GET: http://localhost:8080/api/bookorder/top-3?year=2023
+
+Response:
+[
+    {
+        "year": 2023,
+        "book": {
+            "id": 8,
+            "title": "Harry Potter 1",
+            "author": "New Author3"
+        },
+        "size": 16
+    },
+    {
+        "year": 2023,
+        "book": {
+            "id": 3,
+            "title": "Drita brenda nesh",
+            "author": "Michelle Obama"
+        },
+        "size": 9
+    },
+    {
+        "year": 2023,
+        "book": {
+            "id": 9,
+            "title": "Harry Potter 2",
+            "author": "New Author4"
+        },
+        "size": 7
+    }
+]
+
+Illustrated in PostgreSQL:
+
+![image](https://github.com/user-attachments/assets/ae924244-031d-4aec-b8d2-f3a878dffd3d)
+
 
 ## ✉️ Transactional Emails (Brevo)
 
