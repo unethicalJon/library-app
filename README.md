@@ -76,7 +76,7 @@ cd library-app
 ## 📡 API Documentation
 http://localhost:8080/swagger-ui/index.html
 
-![image](https://github.com/user-attachments/assets/07bc894f-f5d6-448a-ac6d-dad033ac5f1a)
+![ScreenRecording2025-04-09at4 03 27PM-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/abeb9e25-2160-42c4-8c31-789e4b07b3e9)
 
 
 ## 🔐 Security
