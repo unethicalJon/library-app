@@ -76,6 +76,9 @@ cd library-app
 ## 📡 API Documentation
 http://localhost:8080/swagger-ui/index.html
 
+![image](https://github.com/user-attachments/assets/07bc894f-f5d6-448a-ac6d-dad033ac5f1a)
+
+
 ## 🔐 Security
 
 JWT Authentication (Bearer Token)
@@ -143,4 +146,6 @@ Illustrated in PostgreSQL:
 ## ✉️ Transactional Emails (Brevo)
 
 Dynamic and automatic activation email with Brevo template.
+
+<img width="690" alt="image" src="https://github.com/user-attachments/assets/23eb8ecd-0104-46d8-9fb6-6a694c2d0d33" />
 
