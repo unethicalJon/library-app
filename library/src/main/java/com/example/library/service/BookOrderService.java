@@ -3,6 +3,7 @@ package com.example.library.service;
 import com.example.library.dto.bookorder.Top3BooksDto;
 import com.example.library.entity.Book;
 import com.example.library.entity.BookOrder;
+import com.example.library.entity.Order;
 import com.example.library.repository.BookOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,10 @@ public class BookOrderService {
                     return Top3BooksDto.convertToTop3BooksDto(book, totalSize, year);
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<BookOrder> getAcceptedBookOrders() {
+        return bookOrderRepository.findAcceptedByIdAsc();
     }
 
     public List<BookOrder> getAllBookOrders() {

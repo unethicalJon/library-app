@@ -30,7 +30,8 @@ public class ExportBookOrders {
         headerFont.setBold(true);
         headerStyle.setFont(headerFont);
         headerStyle.setAlignment(HorizontalAlignment.CENTER);
-        headerStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+        headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         headerStyle.setBorderTop(BorderStyle.THIN);
         headerStyle.setBorderBottom(BorderStyle.THIN);
@@ -43,46 +44,125 @@ public class ExportBookOrders {
         dataStyle.setBorderBottom(BorderStyle.THIN);
         dataStyle.setBorderLeft(BorderStyle.THIN);
         dataStyle.setBorderRight(BorderStyle.THIN);
-        dataStyle.setAlignment(HorizontalAlignment.LEFT);
+        dataStyle.setAlignment(HorizontalAlignment.CENTER);
+        dataStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
         // BookOrders Sheet
         Sheet bookOrderSheet = workbook.createSheet("Book Orders");
 
         // Add title for Book Orders
         Row bookOrderTitleRow = bookOrderSheet.createRow(2);
-        Cell bookOrderTitleCell = bookOrderTitleRow.createCell(2);
+        Cell bookOrderTitleCell = bookOrderTitleRow.createCell(3); // Start at column D (index 3)
         bookOrderTitleCell.setCellValue("All Orders and their related BookOrders");
-        bookOrderTitleCell.setCellStyle(boldStyle);
-        bookOrderSheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 4));
+        Font titleFont = bookOrderSheet.getWorkbook().createFont();
+        titleFont.setBold(true);  // Apply bold
+        titleFont.setFontHeightInPoints((short) 15);  // Set font size to 15
+        CellStyle titleStyle = bookOrderSheet.getWorkbook().createCellStyle();
+        titleStyle.setFont(titleFont);
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        bookOrderTitleCell.setCellStyle(titleStyle);
+        bookOrderSheet.addMergedRegion(new CellRangeAddress(2, 2, 3, 6));
 
         // Create header row for BookOrders at row 5, column C
         Row bookOrderHeaderRow = bookOrderSheet.createRow(4);
-        String[] bookOrderHeaders = {"Order ID", "Order Number", "User", "User Note", "Admin Note", "Order Status", "Book ID", "Book Title", "Size", "Value"};
+        String[] bookOrderHeaders = {"Order ID", "Serial Number", "User", "Book Title", "Size", "Value"};
         for (int i = 0; i < bookOrderHeaders.length; i++) {
             Cell cell = bookOrderHeaderRow.createCell(i + 2); // Start at column C
             cell.setCellValue(bookOrderHeaders[i]);
             cell.setCellStyle(headerStyle);
         }
 
-        // Populate data rows for BookOrders
-        int bookOrderRowNum = 5; // Start at row 6
-        for (BookOrder bookOrder : bookOrders) {
-            Row row = bookOrderSheet.createRow(bookOrderRowNum++);
-            row.createCell(2).setCellValue(bookOrder.getOrder().getId());
-            row.createCell(3).setCellValue(bookOrder.getOrder().getOrderNumber());
-            row.createCell(4).setCellValue(bookOrder.getOrder().getUser().getName() + " " + bookOrder.getOrder().getUser().getSurname());
-            row.createCell(5).setCellValue(bookOrder.getOrder().getUserNote());
-            row.createCell(6).setCellValue(bookOrder.getOrder().getAdminNote());
-            row.createCell(7).setCellValue(bookOrder.getOrder().getStatus().name);
-            row.createCell(8).setCellValue(bookOrder.getBook().getId());
-            row.createCell(9).setCellValue(bookOrder.getBook().getTitle());
-            row.createCell(10).setCellValue(bookOrder.getSize());
-            row.createCell(11).setCellValue(bookOrder.getValue());
+        // Styles setup
+        dataStyle.setBorderBottom(BorderStyle.THIN);
+        dataStyle.setBorderTop(BorderStyle.THIN);
+        dataStyle.setBorderLeft(BorderStyle.THIN);
+        dataStyle.setBorderRight(BorderStyle.THIN);
 
-            // Apply style to all cells in the row
-            for (int i = 0; i < bookOrderHeaders.length; i++) {
-                row.getCell(i + 2).setCellStyle(dataStyle);
+        CellStyle greenSubtotalStyle = workbook.createCellStyle();
+        greenSubtotalStyle.cloneStyleFrom(dataStyle);
+        greenSubtotalStyle.setFillForegroundColor(IndexedColors.SEA_GREEN.getIndex());
+        greenSubtotalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        CellStyle blueTotalStyle = workbook.createCellStyle();
+        blueTotalStyle.cloneStyleFrom(dataStyle);
+        blueTotalStyle.setFillForegroundColor(IndexedColors.SKY_BLUE.getIndex());
+        blueTotalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // Data writing
+        int bookOrderRowNum = 5;
+        int orderNumber = 1;
+        long currentOrderId = -1;
+        int orderStartRow = -1;
+
+        double sizeSubtotal = 0;
+        double valueSubtotal = 0;
+        double grandTotalSize = 0;
+        double grandTotalValue = 0;
+
+        for (BookOrder bookOrder : bookOrders) {
+            long orderId = bookOrder.getOrder().getId();
+            String userName = bookOrder.getOrder().getUser().getName() + " " + bookOrder.getOrder().getUser().getSurname();
+
+            // New order block
+            if (currentOrderId != -1 && currentOrderId != orderId) {
+                Row subtotalRow = bookOrderSheet.createRow(bookOrderRowNum++);
+                subtotalRow.createCell(2).setCellValue("");
+                subtotalRow.createCell(3).setCellValue("");
+                subtotalRow.createCell(4).setCellValue("");
+                subtotalRow.createCell(5).setCellValue("");
+                subtotalRow.createCell(6).setCellValue(sizeSubtotal);
+                subtotalRow.createCell(7).setCellValue(valueSubtotal);
+                for (int j = 2; j <= 7; j++) {
+                    Cell cell = subtotalRow.getCell(j);
+                    if (cell != null) cell.setCellStyle(greenSubtotalStyle);
+                }
+
+                if (orderStartRow < bookOrderRowNum - 2) {
+                    bookOrderSheet.addMergedRegion(new CellRangeAddress(orderStartRow, bookOrderRowNum - 2, 2, 2));
+                }
+
+                sizeSubtotal = 0;
+                valueSubtotal = 0;
             }
+
+            if (currentOrderId != orderId) {
+                orderStartRow = bookOrderRowNum;
+            }
+
+            currentOrderId = orderId;
+
+            // Data row
+            Row row = bookOrderSheet.createRow(bookOrderRowNum++);
+            row.createCell(2).setCellValue(orderId);
+            row.createCell(3).setCellValue(orderNumber++);
+            row.createCell(4).setCellValue(userName);
+            row.createCell(5).setCellValue(bookOrder.getBook().getTitle());
+            row.createCell(6).setCellValue(bookOrder.getSize());
+            row.createCell(7).setCellValue(bookOrder.getValue());
+
+            for (int j = 0; j < bookOrderHeaders.length; j++) {
+                row.getCell(j + 2).setCellStyle(dataStyle);
+            }
+
+            // Subtotals
+            sizeSubtotal += bookOrder.getSize();
+            valueSubtotal += bookOrder.getValue();
+            grandTotalSize += bookOrder.getSize();
+            grandTotalValue += bookOrder.getValue();
+        }
+
+        // Grand total
+        Row totalRow = bookOrderSheet.createRow(bookOrderRowNum++);
+        totalRow.createCell(2).setCellValue("Grand Total");
+        totalRow.createCell(3).setCellValue("");
+        totalRow.createCell(4).setCellValue("");
+        totalRow.createCell(5).setCellValue("");
+        totalRow.createCell(6).setCellValue(grandTotalSize);
+        totalRow.createCell(7).setCellValue(grandTotalValue);
+        for (int j = 2; j <= 7; j++) {
+            Cell cell = totalRow.getCell(j);
+            if (cell != null) cell.setCellStyle(blueTotalStyle);
         }
 
         // Set column width for Book Orders sheet

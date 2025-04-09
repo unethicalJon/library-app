@@ -87,8 +87,10 @@ public class UserControllerDoc {
         @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
         @Retention(RetentionPolicy.RUNTIME)
         @Operation(
-                summary = "Activate a user",
-                description = "Allows an admin to activate a deactivated user.",
+                summary = "Activate a user and automatically send activation email to them.",
+                description = "Allows an admin to activate a non-activated user." +
+                        "  **Upon activating the user an activation confirmation email will be sent" +
+                        "to their email address**",
                 responses = {
                         @ApiResponse(responseCode = "200", description = "User activated successfully"),
                         @ApiResponse(responseCode = "403", description = "Access denied"),

@@ -116,4 +116,21 @@ public class OrderControllerDoc {
             }
     )
     public @interface GetPendingOrdersDoc {}
+
+    @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Operation(
+            summary = "Export orders to an excel file",
+            description = "Allows an admin to export an excel file of orders. \n\n" +
+                    "**orders.xlsx contains a workbook with two sheets:** \n" +
+                    "-Orders \n" +
+                    "-BookOrders related to the orders",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "File exported successfully"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public @interface ExportOrdersDoc {}
 }
+
+

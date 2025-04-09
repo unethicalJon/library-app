@@ -83,6 +83,7 @@ public class OrderController {
 
     @PreAuthorize("hasAnyAuthority(@Role.ADMIN_NAME)")
     @GetMapping(RestConstants.OrderController.EXPORT)
+    @OrderControllerDoc.ExportOrdersDoc
     public ResponseEntity<byte[]> exportOrders() throws IOException {
 
         List<Order> orders = orderService.getAllOrders();

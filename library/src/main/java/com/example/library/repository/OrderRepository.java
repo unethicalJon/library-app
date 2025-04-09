@@ -20,6 +20,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findByStatus(Status status, Pageable pageable);
 
+    @Query("SELECT o FROM Order o WHERE o.status = 'ACCEPTED' ORDER BY o.id ASC")
+    List<Order> findAcceptedByIdAsc();
+
     @Query("SELECT o FROM Order o ORDER BY o.id ASC")
     List<Order> findAllByIdAsc();
 }
