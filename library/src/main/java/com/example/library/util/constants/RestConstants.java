@@ -28,6 +28,8 @@ public interface RestConstants {
 
         String ACTIVATE_USER = "/activate" + ID_PATH;
 
+        String UPDATE_LIBRARY = "/update-library";
+
         String SIGNUP_FULL_PATH = BASE + SIGN_UP;
 
     }

@@ -60,6 +60,13 @@ public class UserController {
         userService.adminActivateUser(id);
         return ResponseEntity.ok("User activated successfully.");
     }
+
+    @PreAuthorize("hasAnyAuthority(@Role.USER_NAME)")
+    @PutMapping(RestConstants.UserController.UPDATE_LIBRARY)
+    public ResponseEntity<EntityIdDto> updateLibrary(@RequestBody UserDto userDto) {
+        User user = userService.changeLibrary(userDto);
+        return new ResponseEntity<>(EntityIdDto.of(user.getId()), HttpStatus.CREATED);
+    }
 }
 
 

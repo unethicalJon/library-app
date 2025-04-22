@@ -141,6 +141,13 @@ public class UserService {
         emailService.sendActivationEmail(user);
     }
 
+    public User changeLibrary(UserDto userDto) {
+        User user = loggedInUser();
+        Library library = libraryService.findById(userDto.getLibrary().getId());
+        user.setLibrary(library);
+        return save(user);
+    }
+
     public String createJwtToken(AuthenticationRequestDto authenticationRequestDto) {
         try {
             authenticationManager.authenticate(

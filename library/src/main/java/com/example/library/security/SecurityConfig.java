@@ -22,10 +22,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final JwtRequestFilter jwtRequestFilter;
 
-    public SecurityConfig(@Lazy JwtRequestFilter jwtRequestFilter) {
+    private final JwtRequestFilter jwtRequestFilter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    public SecurityConfig(@Lazy JwtRequestFilter jwtRequestFilter, @Lazy OAuth2SuccessHandler oAuth2SuccessHandler) {
         this.jwtRequestFilter = jwtRequestFilter;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
 
     private static final String[] AUTH_WHITELIST = {
@@ -58,6 +61,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(withDefaults())
