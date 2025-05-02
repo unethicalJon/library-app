@@ -2,7 +2,6 @@ package com.example.library.security;
 
 
 import com.example.library.dto.general.ResponseError;
-import com.example.library.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -47,6 +46,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_TOKEN)) {
                 jwt = authorizationHeader.substring(7);
                 username = jwtUtil.extractUsername(jwt);
+
+                if (jwtUtil.isTemporaryToken(jwt) && !request.getRequestURI().contains("/verify-2fa")) {
+                    buildResponse(response, request, "2FA verification required", HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+
             }
         } catch (ExpiredJwtException ex) {
             buildResponse(response, request, "Token expired!", HttpServletResponse.SC_FORBIDDEN);

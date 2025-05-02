@@ -54,6 +54,8 @@ public interface RestConstants {
         String LOG_IN = "/log-in";
 
         String LOGIN_FULL_PATH = BASE + LOG_IN;
+
+        String VERIFY_2FA = "/verify-2fa";
     }
 
     interface LibraryController {

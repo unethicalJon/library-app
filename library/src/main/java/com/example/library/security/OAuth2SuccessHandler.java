@@ -26,10 +26,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
         try {
-            String jwt = oAuth2Service.handleOAuth2User(oAuth2User);
+            String temporaryToken = oAuth2Service.handleOAuth2User(oAuth2User); // return 2FA-temporary token
 
             response.setContentType("application/json");
-            response.getWriter().write("{\"token\": \"" + jwt + "\"}");
+            response.getWriter().write("{\"temporary token\": \"" + temporaryToken + "\", \"2fa_required\": true}");
             response.getWriter().flush();
         } catch (AccessDeniedException ex) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, ex.getMessage());

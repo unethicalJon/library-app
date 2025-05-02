@@ -3,11 +3,9 @@ package com.example.library.service;
 import com.example.library.datatype.Role;
 import com.example.library.entity.User;
 import com.example.library.repository.UserRepository;
-import com.example.library.security.CustomUserDetailService;
 import com.example.library.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,7 @@ import java.util.UUID;
 public class OAuth2Service {
 
     private final UserRepository userRepository;
-    private final CustomUserDetailService userDetailService;
+    private final OtpService otpService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -49,8 +47,15 @@ public class OAuth2Service {
             return userRepository.save(newUser);
         });
 
-        UserDetails userDetails = userDetailService.loadUserByUsername(user.getUsername());
-        return jwtUtil.generateToken(userDetails);
+        // Generate OTP and store it for user
+        String otp = String.format("%06d", (int) (Math.random() * 1_000_000));
+        otpService.storeOtp(user.getUsername(), otp);
+
+        // Send OTP via email
+        otpService.sendOtpEmail(user.getName(), user.getEmail(), otp);
+
+        // Generate temporary token for 2FA
+        return jwtUtil.generateTemporary2FAToken(user.getUsername());
     }
 }
 

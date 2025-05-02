@@ -73,4 +73,23 @@ public class JwtUtil {
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
+
+    public String generateTemporary2FAToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("2fa_temporary", true)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 min expiration
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public boolean isTemporaryToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return Boolean.TRUE.equals(claims.get("2fa_temporary"));
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

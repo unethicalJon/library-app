@@ -6,7 +6,9 @@ import brevo.Configuration;
 import brevoApi.TransactionalEmailsApi;
 import brevoModel.SendSmtpEmail;
 import brevoModel.SendSmtpEmailTo;
+import com.example.library.configuration.BrevoConfig;
 import com.example.library.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,39 +19,31 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    @Value("${brevo.api.key}")
-    private String apiKey;
+    private final BrevoConfig brevoConfig;
+
+    @Autowired
+    public EmailService(BrevoConfig brevoConfig) {
+        this.brevoConfig = brevoConfig;
+    }
 
     public void sendActivationEmail(User user) {
         try {
-            // Initialize Brevo API client
-            ApiClient defaultClient = Configuration.getDefaultApiClient();
-            defaultClient.setApiKey(apiKey);
+            TransactionalEmailsApi emailApi = new TransactionalEmailsApi(brevoConfig.getApiClient());
 
-            // Initialize the Brevo Transactional Email API
-            TransactionalEmailsApi emailApi = new TransactionalEmailsApi(defaultClient);
-
-            // Prepare parameters for the Brevo template
             Map<String, Object> params = new HashMap<>();
             params.put("firstname", user.getName());
             params.put("lastname", user.getSurname());
 
-            // Create the email request
             SendSmtpEmail email = new SendSmtpEmail()
                     .to(Collections.singletonList(new SendSmtpEmailTo().email(user.getEmail())))
                     .templateId(1L)
                     .params(params);
 
-            // Send the email
             emailApi.sendTransacEmail(email);
             System.out.println("Activation email sent successfully to: " + user.getEmail());
 
-        } catch (ApiException e) {
-            System.err.println("Error while sending activation email: " + e.getMessage());
-            System.err.println("Response body: " + e.getResponseBody()); // Log detailed error response
-            e.printStackTrace(); // Optional: Print full stack trace for debugging
         } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
+            System.err.println("Error sending activation email: " + e.getMessage());
             e.printStackTrace();
         }
     }
