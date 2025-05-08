@@ -89,9 +89,9 @@ All routes are role protected
 
 Google Single Sign-On with 2FA
 
-![Screenshot_7](https://github.com/user-attachments/assets/7d646c3d-7021-402e-9bdc-e08c7c338384)
+![image](https://github.com/user-attachments/assets/29d21b26-b55f-461a-a4ce-8c2ad9043790)
 
-![image](https://github.com/user-attachments/assets/de0c10df-0bf5-4606-876d-9b9531d5eef9)
+![image](https://github.com/user-attachments/assets/04ab7b0d-c1c8-42a3-b1c9-e8164fc4a897)
 
 ![Screenshot_2](https://github.com/user-attachments/assets/7e28b6f5-9f90-4c00-bbf6-f4e2304853af)
 
