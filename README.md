@@ -85,6 +85,19 @@ JWT Authentication (Bearer Token)
 
 All routes are role protected
 
+![image](https://github.com/user-attachments/assets/d9af3266-853d-414c-83ee-4ef7ba3e7436)
+
+Google Single Sign-On with 2FA
+
+![Screenshot_7](https://github.com/user-attachments/assets/7d646c3d-7021-402e-9bdc-e08c7c338384)
+
+![image](https://github.com/user-attachments/assets/de0c10df-0bf5-4606-876d-9b9531d5eef9)
+
+![Screenshot_2](https://github.com/user-attachments/assets/7e28b6f5-9f90-4c00-bbf6-f4e2304853af)
+
+![Screenshot_6](https://github.com/user-attachments/assets/01428510-ab38-4ebc-af2e-c73ae882c91a)
+
+
 ## 📁 Working with Files
 📊 Excel
 
